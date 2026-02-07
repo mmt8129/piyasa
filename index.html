@@ -3,58 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Haber Paneli</title>
   <style>
-    body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 15px; }
-    .haber-kart { background: #fff; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); cursor: pointer; border-left: 6px solid #007bff; }
-    .haber-kart h3 { margin: 0; font-size: 15px; color: #222; }
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 1000; }
-    .modal-icerik { background: #fff; margin: 10% auto; padding: 20px; width: 85%; border-radius: 15px; max-height: 80vh; overflow-y: auto; }
-    .detay-link { display: block; background: #28a745; color: #fff; text-align: center; padding: 15px; border-radius: 10px; text-decoration: none; font-weight: bold; margin-top: 15px; font-size: 16px; }
-    #kapat-btn { background: #dc3545; color: #fff; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; margin-top: 10px; font-size: 16px; cursor: pointer; }
-    h2 { font-size: 18px; color: #007bff; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 15px; }
+    #haber-listesi { display: flex; flex-direction: column; gap: 12px; }
+    .haber-kart { background: #fff; border-radius: 12px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; border-left: 6px solid #007bff; }
+    .haber-kart h3 { margin: 0; font-size: 15px; color: #333; line-height: 1.4; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1000; }
+    .modal-icerik { background: #fff; margin: 15% auto; padding: 25px; width: 85%; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .modal-icerik h2 { font-size: 18px; color: #007bff; margin-top: 0; }
+    .modal-icerik p { font-size: 14px; color: #555; line-height: 1.5; margin: 15px 0; }
+    .detay-link { display: block; background: #28a745; color: white; text-align: center; padding: 15px; border-radius: 10px; text-decoration: none; font-weight: bold; margin-bottom: 10px; }
+    #kapat-btn { background: #6c757d; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; width: 100%; font-size: 16px; cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <div id="haber-listesi">Yükleniyor... 🔄</div>
+  <div id="haber-listesi">Haberler hazırlanıyor... ⏳</div>
 
   <div id="modal" class="modal">
     <div class="modal-icerik">
       <h2 id="modal-baslik"></h2>
       <p id="modal-ozet"></p>
-      <div id="modal-butonlar"></div>
+      <div id="modal-buton-alani"></div>
       <button id="kapat-btn">KAPAT</button>
     </div>
   </div>
 
   <script>
     const apiKey = 'c51c358f11acc86219d65eb567e22776';
-    const rawUrl = `https://gnews.io/api/v4/top-headlines?lang=tr&max=5&apikey=${apiKey}`;
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`;
+    // Önce doğrudan çekmeyi deniyoruz, hata olursa proxy devreye girecek
+    const url = `https://gnews.io/api/v4/top-headlines?lang=tr&max=5&apikey=${apiKey}`;
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
 
-    async function haberleriYukle() {
+    async function haberleriCek() {
+      const liste = document.getElementById('haber-listesi');
       try {
+        // Allorigins proxy servisi daha kararlıdır
         const response = await fetch(proxyUrl);
-        const data = await response.json();
-        const liste = document.getElementById('haber-listesi');
-        liste.innerHTML = '';
+        const result = await response.json();
+        const data = JSON.parse(result.contents);
 
-        data.articles.forEach(haber => {
-          const kart = document.createElement('div');
-          kart.className = 'haber-kart';
-          kart.innerHTML = `<h3>${haber.title}</h3>`;
-          kart.onclick = () => {
-            document.getElementById('modal-baslik').innerText = haber.title;
-            document.getElementById('modal-ozet').innerText = haber.description || 'İçerik mevcut değil.';
-            document.getElementById('modal-butonlar').innerHTML = `
-              <a href="${haber.url}" target="_blank" class="detay-link">KAYNAĞA GİT / OKU</a>
-            `;
-            document.getElementById('modal').style.display = 'block';
-          };
-          liste.appendChild(kart);
-        });
+        if (data.articles && data.articles.length > 0) {
+          liste.innerHTML = '';
+          data.articles.forEach(haber => {
+            const kart = document.createElement('div');
+            kart.className = 'haber-kart';
+            kart.innerHTML = `<h3>${haber.title}</h3>`;
+            kart.onclick = () => {
+              document.getElementById('modal-baslik').innerText = haber.title;
+              document.getElementById('modal-ozet').innerText = haber.description || 'Detay bulunamadı.';
+              document.getElementById('modal-buton-alani').innerHTML = `
+                <a href="${haber.url}" target="_blank" class="detay-link">HABERİN TAMAMINI OKU 🔗</a>
+              `;
+              document.getElementById('modal').style.display = 'block';
+            };
+            liste.appendChild(kart);
+          });
+        } else {
+          liste.innerHTML = 'Haber bulunamadı veya limit doldu. ❌';
+        }
       } catch (hata) {
-        document.getElementById('haber-listesi').innerText = 'Hata oluştu! ❌';
+        liste.innerHTML = 'Bağlantı hatası! Lütfen interneti kontrol et. 🌐';
+        console.error(hata);
       }
     }
 
@@ -63,10 +74,12 @@
     };
 
     window.onclick = (e) => {
-      if (e.target.className === 'modal') document.getElementById('modal').style.display = 'none';
+      if (e.target.className === 'modal') {
+        document.getElementById('modal').style.display = 'none';
+      }
     };
 
-    haberleriYukle();
+    haberleriCek();
   </script>
 </body>
 </html>
