@@ -1,290 +1,53 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-<title>Dokunmatik Yılan Oyunu</title>
-<style>
-  html, body {
-    margin: 0; padding: 0; height: 100%; overflow: hidden;
-    background: #111;
-    font-family: Arial, sans-serif;
-    user-select: none;
-  }
-  #speedContainer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 40px;
-    background: rgba(0, 0, 0, 0.8);
-    color: #0f0;
-    display: flex;
-    align-items: center;
-    padding: 0 15px;
-    box-sizing: border-box;
-    z-index: 30;
-    gap: 15px;
-  }
-  #speedLabel {
-    font-weight: bold;
-    font-size: 16px;
-    white-space: nowrap;
-  }
-  #speedSlider {
-    flex-grow: 1;
-    -webkit-appearance: none;
-    height: 8px;
-    border-radius: 5px;
-    background: #222;
-    outline: none;
-    cursor: pointer;
-  }
-  #speedSlider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    background: #0f0;
-    cursor: pointer;
-    border-radius: 50%;
-    border: 2px solid #0a0;
-    margin-top: -6px;
-  }
-  #speedSlider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background: #0f0;
-    cursor: pointer;
-    border-radius: 50%;
-    border: 2px solid #0a0;
-  }
-  #pauseButton {
-    background: #222;
-    border: 2px solid #0f0;
-    color: #0f0;
-    padding: 6px 14px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    user-select: none;
-    transition: background 0.3s;
-    white-space: nowrap;
-  }
-  #pauseButton:hover {
-    background: #0f0;
-    color: #000;
-  }
-  #scoreDisplay {
-    font-weight: bold;
-    font-size: 16px;
-    white-space: nowrap;
-    user-select: none;
-    min-width: 90px;
-    text-align: right;
-  }
-  canvas {
-    display: block;
-    width: 100vw;
-    height: calc(100vh - 40px);
-    background: linear-gradient(45deg, #000, #111);
-    touch-action: none;
-    margin-top: 40px;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+    .haber-kart { background: #fff; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; border-left: 5px solid #007bff; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
+    .modal-icerik { background: #fff; margin: 20% auto; padding: 20px; width: 80%; border-radius: 15px; }
+    #kapat-btn { background: #007bff; color: #fff; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; }
+  </style>
 </head>
 <body>
-
-<div id="speedContainer">
-  <div id="speedLabel">Hız: <span id="speedValue">10</span></div>
-  <input type="range" id="speedSlider" min="1" max="30" value="10" step="1" />
-  <button id="pauseButton">Duraklat</button>
-  <div id="scoreDisplay">Skor: 0</div>
-</div>
-
-<canvas id="game"></canvas>
-
-<script>
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
-
-let width, height, cellSize;
-let cols, rows;
-
-function resize() {
-  width = window.innerWidth;
-  height = window.innerHeight - 40; // slider yüksekliği kadar boşluk bırak
-  canvas.width = width;
-  canvas.height = height;
-  cellSize = Math.floor(Math.min(width, height) / 20);
-  cols = Math.floor(width / cellSize);
-  rows = Math.floor(height / cellSize);
-}
-resize();
-window.addEventListener('resize', () => {
-  resize();
-  placeFood();
-});
-
-let snake = [{x: 10, y: 10}];
-let direction = {x: 1, y: 0};
-let food = {};
-let score = 0;
-
-const maxScore = 70000;
-
-let speed = 10; // hareket/saniye başlangıç
-const minSpeed = 1;
-const maxSpeed = 30;
-
-let gameInterval = null;
-let paused = false;
-
-function placeFood() {
-  do {
-    food.x = Math.floor(Math.random() * cols);
-    food.y = Math.floor(Math.random() * rows);
-  } while (snake.some(s => s.x === food.x && s.y === food.y));
-}
-placeFood();
-
-function drawCell(x, y, color) {
-  ctx.fillStyle = color;
-  ctx.fillRect(x * cellSize + 1, y * cellSize + 1, cellSize - 2, cellSize - 2);
-}
-
-function drawScoreOnCanvas() {
-  ctx.fillStyle = 'white';
-  ctx.font = '20px Arial';
-  ctx.fillText('Skor: ' + score, 10, 30);
-}
-
-function resetGame() {
-  snake = [{x: 10, y: 10}];
-  direction = {x: 1, y: 0};
-  score = 0;
-  placeFood();
-  updateSpeedDisplay();
-  updateScoreDisplay();
-  restartGameLoop();
-}
-
-function updateScoreDisplay() {
-  document.getElementById('scoreDisplay').textContent = 'Skor: ' + score;
-}
-
-function gameLoop() {
-  if (paused) return;
-
-  let nextX = snake[0].x + direction.x;
-  let nextY = snake[0].y + direction.y;
-
-  // Ekran sarma
-  if (nextX < 0) nextX = cols - 1;
-  else if (nextX >= cols) nextX = 0;
-  if (nextY < 0) nextY = rows - 1;
-  else if (nextY >= rows) nextY = 0;
-
-  // Kendine çarpma kontrolü
-  if (snake.some(s => s.x === nextX && s.y === nextY)) {
-    alert('Oyun bitti! Skorunuz: ' + score);
-    resetGame();
-    return;
-  }
-
-  snake.unshift({x: nextX, y: nextY});
-
-  if (nextX === food.x && nextY === food.y) {
-    score++;
-    updateScoreDisplay();
-    if (score >= maxScore) {
-      alert('Tebrikler! Maksimum skora ulaştınız: ' + score);
-      resetGame();
-      return;
+  <div id="haber-listesi">Haberler yükleniyor... 🔄</div>
+  <div id="modal" class="modal">
+    <div class="modal-icerik">
+      <h2 id="modal-baslik"></h2>
+      <p id="modal-ozet"></p>
+      <button id="kapat-btn">TAMAM</button>
+    </div>
+  </div>
+  <script>
+    const apiKey = 'c51c358f11acc86219d65eb567e22776';
+    const apiUrl = `https://gnews.io/api/v4/top-headlines?lang=tr&max=5&apikey=${apiKey}`;
+    async function haberleriYukle() {
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error('API Hatası: ' + response.status);
+        const data = await response.json();
+        const liste = document.getElementById('haber-listesi');
+        liste.innerHTML = '';
+        if (data.articles.length === 0) { liste.innerHTML = 'Haber bulunamadı. ❌'; return; }
+        data.articles.forEach(haber => {
+          const kart = document.createElement('div');
+          kart.className = 'haber-kart';
+          kart.innerHTML = `<h3>${haber.title}</h3>`;
+          kart.onclick = () => {
+            document.getElementById('modal-baslik').innerText = haber.title;
+            document.getElementById('modal-ozet').innerText = haber.description || 'Özet bulunamadı.';
+            document.getElementById('modal').style.display = 'block';
+          };
+          liste.appendChild(kart);
+        });
+      } catch (hata) {
+        document.getElementById('haber-listesi').innerText = 'Hata: ' + hata.message;
+      }
     }
-    placeFood();
-  } else {
-    snake.pop();
-  }
-
-  ctx.clearRect(0, 0, width, height);
-  drawCell(food.x, food.y, 'red');
-  snake.forEach((s, i) => drawCell(s.x, s.y, i === 0 ? '#00FF00' : '#66FF66'));
-  drawScoreOnCanvas();
-}
-
-function speedToInterval(spd) {
-  return 1000 / spd;
-}
-
-function restartGameLoop() {
-  if (gameInterval) clearInterval(gameInterval);
-  if (!paused) {
-    gameInterval = setInterval(gameLoop, speedToInterval(speed));
-  }
-}
-
-function updateSpeedDisplay() {
-  document.getElementById('speedValue').textContent = speed;
-}
-
-document.getElementById('speedSlider').addEventListener('input', (e) => {
-  speed = parseInt(e.target.value);
-  updateSpeedDisplay();
-  restartGameLoop();
-});
-
-const pauseButton = document.getElementById('pauseButton');
-pauseButton.addEventListener('click', () => {
-  paused = !paused;
-  if (paused) {
-    pauseButton.textContent = 'Devam Et';
-    clearInterval(gameInterval);
-  } else {
-    pauseButton.textContent = 'Duraklat';
-    restartGameLoop();
-  }
-});
-
-let touchStartX = 0;
-let touchStartY = 0;
-
-canvas.addEventListener('touchstart', e => {
-  const touch = e.touches[0];
-  touchStartX = touch.clientX;
-  touchStartY = touch.clientY;
-});
-
-canvas.addEventListener('touchmove', e => {
-  e.preventDefault();
-  const touch = e.touches[0];
-  const dx = touch.clientX - touchStartX;
-  const dy = touch.clientY - touchStartY;
-
-  if (Math.abs(dx) > Math.abs(dy)) {
-    if (dx > 30 && direction.x !== -1) {
-      direction = {x: 1, y: 0};
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
-    } else if (dx < -30 && direction.x !== 1) {
-      direction = {x: -1, y: 0};
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
-    }
-  } else {
-    if (dy > 30 && direction.y !== -1) {
-      direction = {x: 0, y: 1};
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
-    } else if (dy < -30 && direction.y !== 1) {
-      direction = {x: 0, y: -1};
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
-    }
-  }
-});
-
-resetGame();
-</script>
+    document.getElementById('kapat-btn').onclick = () => document.getElementById('modal').style.display = 'none';
+    haberleriYukle();
+  </script>
 </body>
 </html>
