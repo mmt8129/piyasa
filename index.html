@@ -1,85 +1,80 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Haber Paneli</title>
-  <style>
-    body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 15px; }
-    #haber-listesi { display: flex; flex-direction: column; gap: 12px; }
-    .haber-kart { background: #fff; border-radius: 12px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; border-left: 6px solid #007bff; }
-    .haber-kart h3 { margin: 0; font-size: 15px; color: #333; line-height: 1.4; }
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1000; }
-    .modal-icerik { background: #fff; margin: 15% auto; padding: 25px; width: 85%; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-    .modal-icerik h2 { font-size: 18px; color: #007bff; margin-top: 0; }
-    .modal-icerik p { font-size: 14px; color: #555; line-height: 1.5; margin: 15px 0; }
-    .detay-link { display: block; background: #28a745; color: white; text-align: center; padding: 15px; border-radius: 10px; text-decoration: none; font-weight: bold; margin-bottom: 10px; }
-    #kapat-btn { background: #6c757d; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; width: 100%; font-size: 16px; cursor: pointer; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>PWA FINANS</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 10px; }
+        .container { display: flex; flex-direction: column; gap: 10px; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .info { display: flex; flex-direction: column; }
+        .title { font-weight: bold; font-size: 1.1rem; color: #333; }
+        .time { font-size: 0.7rem; color: #888; }
+        .prices { text-align: right; }
+        .buy { color: green; font-weight: bold; display: block; }
+        .sell { color: red; font-weight: bold; display: block; }
+        .header { text-align: center; font-weight: bold; padding: 10px; color: #2c3e50; }
+    </style>
 </head>
 <body>
 
-  <div id="haber-listesi">Haberler hazırlanıyor... ⏳</div>
-
-  <div id="modal" class="modal">
-    <div class="modal-icerik">
-      <h2 id="modal-baslik"></h2>
-      <p id="modal-ozet"></p>
-      <div id="modal-buton-alani"></div>
-      <button id="kapat-btn">KAPAT</button>
+    <div class="header">GÜNCEL PİYASA VERİLERİ</div>
+    
+    <div class="container" id="data-container">
+        <div class="card"><span>Yükleniyor...</span></div>
     </div>
-  </div>
 
-  <script>
-    const apiKey = 'c51c358f11acc86219d65eb567e22776';
-    // Önce doğrudan çekmeyi deniyoruz, hata olursa proxy devreye girecek
-    const url = `https://corsproxy.io/?https://gnews.io/api/v4/top-headlines?lang=tr&max=5&apikey=${apiKey}`;
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    <script>
+        const GOLD_URL = 'https://static.altinkaynak.com/public/Gold';
+        const CURR_URL = 'https://static.altinkaynak.com/public/Currency';
 
-    async function haberleriCek() {
-      const liste = document.getElementById('haber-listesi');
-      try {
-        // Allorigins proxy servisi daha kararlıdır
-        const response = await fetch(proxyUrl);
-        const result = await response.json();
-        const data = JSON.parse(result.contents);
+        async function fetchData() {
+            try {
+                // Not: Gerçek uygulamada burayı Firebase üzerinden dolandıracağız
+                const [goldRes, currRes] = await Promise.all([
+                    fetch(GOLD_URL).then(r => r.json()),
+                    fetch(CURR_URL).then(r => r.json())
+                ]);
 
-        if (data.articles && data.articles.length > 0) {
-          liste.innerHTML = '';
-          data.articles.forEach(haber => {
-            const kart = document.createElement('div');
-            kart.className = 'haber-kart';
-            kart.innerHTML = `<h3>${haber.title}</h3>`;
-            kart.onclick = () => {
-              document.getElementById('modal-baslik').innerText = haber.title;
-              document.getElementById('modal-ozet').innerText = haber.description || 'Detay bulunamadı.';
-              document.getElementById('modal-buton-alani').innerHTML = `
-                <a href="${haber.url}" target="_blank" class="detay-link">HABERİN TAMAMINI OKU 🔗</a>
-              `;
-              document.getElementById('modal').style.display = 'block';
-            };
-            liste.appendChild(kart);
-          });
-        } else {
-          liste.innerHTML = 'Haber bulunamadı veya limit doldu. ❌';
+                const gram = goldRes.find(item => item.Kod === "GA");
+                const usd = currRes.find(item => item.Kod === "USD");
+                const eur = currRes.find(item => item.Kod === "EUR");
+
+                const items = [
+                    { ad: "GRAM ALTIN", veri: gram },
+                    { ad: "DOLAR", veri: usd },
+                    { ad: "EURO", veri: eur }
+                ];
+
+                render(items);
+            } catch (err) {
+                console.error("Hata:", err);
+            }
         }
-      } catch (hata) {
-        liste.innerHTML = 'Bağlantı hatası! Lütfen interneti kontrol et. 🌐';
-        console.error(hata);
-      }
-    }
 
-    document.getElementById('kapat-btn').onclick = () => {
-      document.getElementById('modal').style.display = 'none';
-    };
+        function render(items) {
+            const container = document.getElementById('data-container');
+            container.innerHTML = '';
+            
+            items.forEach(item => {
+                const html = `
+                    <div class="card">
+                        <div class="info">
+                            <span class="title">${item.ad}</span>
+                            <span class="time">${item.veri.GuncellenmeZamani}</span>
+                        </div>
+                        <div class="prices">
+                            <span class="buy">ALIŞ: ${item.veri.Alis}</span>
+                            <span class="sell">SATIŞ: ${item.veri.Satis}</span>
+                        </div>
+                    </div>`;
+                container.innerHTML += html;
+            });
+        }
 
-    window.onclick = (e) => {
-      if (e.target.className === 'modal') {
-        document.getElementById('modal').style.display = 'none';
-      }
-    };
-
-    haberleriCek();
-  </script>
+        fetchData();
+        setInterval(fetchData, 60000); // 1 dakikada bir güncelle
+    </script>
 </body>
 </html>
