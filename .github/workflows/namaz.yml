@@ -11,8 +11,7 @@ jobs:
       - name: Tum Verileri Cek ve Firebase e Gonder
         run: |
           # 1. HAVA DURUMU (ANKARA)
-          # Eski wttr.in satırını sil, bunu yapıştır:
-curl -s "https://api.open-meteo.com/v1/forecast?latitude=39.9334&longitude=32.8597&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto" > hava.json
+          curl -s "https://api.open-meteo.com/v1/forecast?latitude=39.9334&longitude=32.8597&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto" > hava.json
           
           # 2. NAMAZ VAKITLERI (ANKARA)
           curl -s "https://muslimsalat.com/ankara/daily.json" > namaz.json
