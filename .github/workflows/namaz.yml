@@ -8,12 +8,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Veri Cek ve Gonder
+      - name: Namaz Vakitlerini Cek
         run: |
-          # Ankara/Sincan verisini çekiyoruz
-          RESPONSE=$(curl -s "https://api.aladhan.com/v1/timingsByCity?city=Ankara&country=Turkey&method=13")
-          # Sadece vakitlerin olduğu kısmı ayıklıyoruz
-          echo $RESPONSE | jq '.data.timings' > vakitler.json
-          # Firebase'e direkt o parşayı atıyoruz
-          curl -X PUT -d @vakitler.json "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
+          # Ankara/Sincan için vakitleri çek (Vakit.me API)
+          curl -s "https://vakit.me/api/v1/vakityer?yer=13009" > namaz_data.json
           
+          # Firebase'e gönder
+          curl -X PUT -d @namaz_data.json "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
