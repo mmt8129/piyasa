@@ -1,17 +1,13 @@
 name: Namaz Vakitleri Guncelle
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * *'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Veri Cek ve Gonder
+      - name: Test Gonderimi
         run: |
-          # Aladhan API üzerinden Ankara vakitlerini çekiyoruz
-          curl -s "https://api.aladhan.com/v1/timingsByCity?city=Ankara&country=Turkey&method=13" > ankara.json
-          
-          # Firebase'e direkt gönderiyoruz
-          curl -X PUT -d @ankara.json "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
+          # API kullanmadan el ile test verisi gonderiyoruz
+          echo '{"durum": "deneme", "sehir": "Ankara"}' > test.json
+          curl -X PUT -d @test.json "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
