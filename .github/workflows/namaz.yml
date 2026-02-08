@@ -1,0 +1,18 @@
+name: Namaz Vakitleri Guncelle
+on:
+  schedule:
+    - cron: '0 0 * * *' # Her gece 00:00'da çalışır
+  workflow_dispatch: # El ile çalıştırmak için
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Veri Cek ve Firebase'e Yaz
+        run: |
+          # Ankara/Sincan için vakitleri çekiyoruz
+          RESPONSE=$(curl -s "https://api.aladhan.com/v1/timingsByCity?city=Ankara&country=Turkey&method=13")
+          VAKITLER=$(echo $RESPONSE | jq '.data.timings')
+          
+          # Veriyi Firebase'e gönder
+          curl -X PUT -d "$VAKITLER" "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
