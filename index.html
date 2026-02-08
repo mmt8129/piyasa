@@ -6,31 +6,41 @@
     <title>PWA FINANS</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 15px; }
-        .header { text-align: center; font-weight: bold; font-size: 1.3rem; margin-bottom: 20px; color: #1a2a6c; }
-        .container { display: flex; flex-direction: column; gap: 10px; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #f1c40f; }
-        .info { display: flex; flex-direction: column; }
-        .title { font-weight: bold; font-size: 1rem; color: #333; text-transform: uppercase; }
-        .time { font-size: 0.7rem; color: #888; margin-top: 4px; }
-        .prices { text-align: right; }
-        .buy { color: #2ecc71; font-weight: bold; font-size: 1.1rem; display: block; }
-        .sell { color: #e74c3c; font-weight: bold; font-size: 1.1rem; display: block; }
-        .group-title { font-size: 0.9rem; color: #7f8c8d; margin-top: 10px; padding-left: 5px; font-weight: bold; }
+        .header { text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; color: #1a2a6c; }
+        .container { display: flex; flex-direction: column; gap: 8px; }
         
-        /* Namaz Kartı Tasarımı */
-        .namaz-container { background: #1a2a6c; color: white; padding: 15px; border-radius: 12px; margin-top: 20px; }
-        .namaz-grid { display: flex; justify-content: space-between; text-align: center; margin-top: 10px; }
-        .namaz-item { display: flex; flex-direction: column; gap: 5px; }
-        .namaz-label { font-size: 0.7rem; color: #bdc3c7; }
-        .namaz-vakit { font-weight: bold; font-size: 0.9rem; }
+        /* Hava Durumu Kartı */
+        .weather-card { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .weather-temp { font-size: 2.2rem; font-weight: bold; }
+        .weather-desc { font-size: 0.9rem; text-transform: uppercase; opacity: 0.9; }
+
+        /* Piyasa Kartları */
+        .card { background: white; padding: 12px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #f1c40f; }
+        .title { font-weight: bold; font-size: 0.9rem; color: #333; }
+        .time { font-size: 0.65rem; color: #999; }
+        .buy { color: #2ecc71; font-weight: bold; font-size: 1rem; }
+        .sell { color: #e74c3c; font-weight: bold; font-size: 1rem; }
+        .group-title { font-size: 0.8rem; color: #7f8c8d; margin-top: 10px; font-weight: bold; text-align: center; }
+
+        /* Namaz Kartı */
+        .namaz-card { background: #1e1e1e; color: white; padding: 12px; border-radius: 10px; margin-top: 20px; }
+        .namaz-grid { display: flex; justify-content: space-between; text-align: center; margin-top: 8px; }
+        .namaz-item { display: flex; flex-direction: column; font-size: 0.75rem; }
+        .namaz-vakit { font-weight: bold; color: #f1c40f; }
     </style>
 </head>
 <body>
 
+    <div class="weather-card">
+        <div style="font-size: 0.7rem;">ANKARA HAVA DURUMU</div>
+        <div class="weather-temp" id="derece">--°C</div>
+        <div class="weather-desc" id="durum">Yükleniyor...</div>
+    </div>
+
     <div class="header">CANLI PİYASA VERİLERİ</div>
     
     <div class="container" id="data-container">
-        <div class="card"><span>Veriler Firebase'den çekiliyor...</span></div>
+        <div class="card"><span>Veriler yükleniyor...</span></div>
     </div>
 
     <div id="namaz-alani"></div>
@@ -52,20 +62,29 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // PİYASA VERİLERİNİ ÇEK
+        // HAVA DURUMU VERİSİ
+        db.ref("hava/current_condition/0").on("value", (snapshot) => {
+            const hData = snapshot.val();
+            if (hData) {
+                document.getElementById('derece').innerText = hData.temp_C + "°C";
+                document.getElementById('durum').innerText = hData.lang_tr ? hData.lang_tr[0].value : hData.weatherDesc[0].value;
+            }
+        });
+
+        // PİYASA VERİLERİ
         db.ref("piyasa").on("value", (snapshot) => {
             const container = document.getElementById('data-container');
             const data = snapshot.val();
             if (data) {
                 container.innerHTML = '';
                 if(data.gold) {
-                    container.innerHTML += '<div class="group-title">ALTIN FİYATLARI</div>';
+                    container.innerHTML += '<div class="group-title">ALTIN</div>';
                     data.gold.forEach(item => {
                         if(["GA", "22", "18", "14"].includes(item.Kod)) renderCard(container, item);
                     });
                 }
                 if(data.currency) {
-                    container.innerHTML += '<div class="group-title">DÖVİZ KURLARI</div>';
+                    container.innerHTML += '<div class="group-title">DÖVİZ</div>';
                     data.currency.forEach(item => {
                         if(["USD", "EUR", "GBP"].includes(item.Kod)) renderCard(container, item);
                     });
@@ -73,21 +92,21 @@
             }
         });
 
-        // NAMAZ VAKİTLERİNİ ÇEK
+        // NAMAZ VAKİTLERİ VERİSİ
         db.ref("namaz/items/0").on("value", (snapshot) => {
             const nData = snapshot.val();
             const namazDiv = document.getElementById('namaz-alani');
             if (nData) {
                 namazDiv.innerHTML = `
-                    <div class="namaz-container">
-                        <div style="text-align:center; font-weight:bold; font-size:0.9rem; border-bottom:1px solid #34495e; padding-bottom:8px;">ANKARA NAMAZ VAKİTLERİ</div>
+                    <div class="namaz-card">
+                        <div style="text-align:center; font-size:0.7rem; border-bottom:1px solid #333; padding-bottom:5px;">ANKARA NAMAZ VAKİTLERİ</div>
                         <div class="namaz-grid">
-                            <div class="namaz-item"><span class="namaz-label">İmsak</span><span class="namaz-vakit">${nData.fajr}</span></div>
-                            <div class="namaz-item"><span class="namaz-label">Güneş</span><span class="namaz-vakit">${nData.shurooq}</span></div>
-                            <div class="namaz-item"><span class="namaz-label">Öğle</span><span class="namaz-vakit">${nData.dhuhr}</span></div>
-                            <div class="namaz-item"><span class="namaz-label">İkindi</span><span class="namaz-vakit">${nData.asr}</span></div>
-                            <div class="namaz-item"><span class="namaz-label">Akşam</span><span class="namaz-vakit">${nData.maghrib}</span></div>
-                            <div class="namaz-item"><span class="namaz-label">Yatsı</span><span class="namaz-vakit">${nData.isha}</span></div>
+                            <div class="namaz-item"><span>İmsak</span><span class="namaz-vakit">${nData.fajr}</span></div>
+                            <div class="namaz-item"><span>Güneş</span><span class="namaz-vakit">${nData.shurooq}</span></div>
+                            <div class="namaz-item"><span>Öğle</span><span class="namaz-vakit">${nData.dhuhr}</span></div>
+                            <div class="namaz-item"><span>İkindi</span><span class="namaz-vakit">${nData.asr}</span></div>
+                            <div class="namaz-item"><span>Akşam</span><span class="namaz-vakit">${nData.maghrib}</span></div>
+                            <div class="namaz-item"><span>Yatsı</span><span class="namaz-vakit">${nData.isha}</span></div>
                         </div>
                     </div>`;
             }
@@ -97,11 +116,11 @@
             container.innerHTML += `
                 <div class="card">
                     <div class="info">
-                        <span class="title">${item.Aciklama}</span>
+                        <span class="title">${item.Aciklama}</span><br>
                         <span class="time">${item.GuncellenmeZamani}</span>
                     </div>
                     <div class="prices">
-                        <span class="buy">AL: ${item.Alis}</span>
+                        <span class="buy">AL: ${item.Alis}</span><br>
                         <span class="sell">SAT: ${item.Satis}</span>
                     </div>
                 </div>`;
