@@ -3,13 +3,15 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Veri Cek ve Gonder
+      - name: Veri Cek
         run: |
-          # Vakit verisini al ve Firebase'e bas
-          curl -s "https://vakit.me/api/v1/vakityer?yer=13009" > data.json
-          curl -X PUT -d @data.json "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
+          # Ankara Sincan (İlçe ID: 9214) verisini çekiyoruz
+          curl -L "https://ezanvakti.herokuapp.com/vakitler/9214" -o namaz.json      
+      - name: Firebase Gonder
+        run: |
+          # Veriyi Firebase'e basıyoruz
+          curl -X PUT -d @namaz.json "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
