@@ -10,20 +10,20 @@ jobs:
     steps:
       - name: Tum Verileri Cek ve Firebase e Gonder
         run: |
-          # Hava ve Namaz
+          # 1. HAVA DURUMU (ANKARA)
           curl -s "https://wttr.in/Ankara?format=j1" > hava.json
+          
+          # 2. NAMAZ VAKITLERI (ANKARA)
           curl -s "https://muslimsalat.com/ankara/daily.json" > namaz.json
           
-          # 4 Farklı Kaynaktan Haberler
+          # 3. HABER KAYNAKLARI (RSS TO JSON)
           curl -s "https://api.rss2json.com/v1/api.json?rss_url=https://www.trthaber.com/manset_articles.rss" > haber_trt.json
-          curl -s "https://api.rss2json.com/v1/api.json?rss_url=https://rss.haberler.com/rss.asp?kategori=manset" > haber_haberler.json
-          curl -s "https://api.rss2json.com/v1/api.json?rss_url=https://www.ntv.com.tr/gundem.rss" > haber_ntv.json
           curl -s "https://api.rss2json.com/v1/api.json?rss_url=https://www.cnnturk.com/feed/rss/all/news" > haber_cnn.json
+          curl -s "https://api.rss2json.com/v1/api.json?rss_url=https://www.ntv.com.tr/gundem.rss" > haber_ntv.json
           
-          # Firebase'e Gönder (PUT metodu ile tertemiz yazar)
+          # 4. FIREBASE VERITABANINA GONDERIM
           curl -X PUT -d @hava.json "https://piyasa-9049c-default-rtdb.firebaseio.com/hava.json"
           curl -X PUT -d @namaz.json "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
           curl -X PUT -d @haber_trt.json "https://piyasa-9049c-default-rtdb.firebaseio.com/haber_trt.json"
-          curl -X PUT -d @haber_haberler.json "https://piyasa-9049c-default-rtdb.firebaseio.com/haber_haberler.json"
-          curl -X PUT -d @haber_ntv.json "https://piyasa-9049c-default-rtdb.firebaseio.com/haber_ntv.json"
           curl -X PUT -d @haber_cnn.json "https://piyasa-9049c-default-rtdb.firebaseio.com/haber_cnn.json"
+          curl -X PUT -d @haber_ntv.json "https://piyasa-9049c-default-rtdb.firebaseio.com/haber_ntv.json"
