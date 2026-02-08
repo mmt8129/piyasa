@@ -22,19 +22,20 @@
     <div class="header">GÜNCEL PİYASA VERİLERİ</div>
     
     <div class="container" id="data-container">
-        <div class="card"><span>Yükleniyor...</span></div>
+        <div class="card"><span>Veriler Çekiliyor...</span></div>
     </div>
 
     <script>
-        const GOLD_URL = 'https://static.altinkaynak.com/public/Gold';
-        const CURR_URL = 'https://static.altinkaynak.com/public/Currency';
+        // Ücretsiz CORS Köprüsü (Proxy)
+        const PROXY = "https://api.allorigins.win/get?url=";
+        const GOLD_URL = encodeURIComponent('https://static.altinkaynak.com/public/Gold');
+        const CURR_URL = encodeURIComponent('https://static.altinkaynak.com/public/Currency');
 
         async function fetchData() {
             try {
-                // Not: Gerçek uygulamada burayı Firebase üzerinden dolandıracağız
                 const [goldRes, currRes] = await Promise.all([
-                    fetch(GOLD_URL).then(r => r.json()),
-                    fetch(CURR_URL).then(r => r.json())
+                    fetch(PROXY + GOLD_URL).then(r => r.json()).then(d => JSON.parse(d.contents)),
+                    fetch(PROXY + CURR_URL).then(r => r.json()).then(d => JSON.parse(d.contents))
                 ]);
 
                 const gram = goldRes.find(item => item.Kod === "GA");
@@ -49,6 +50,7 @@
 
                 render(items);
             } catch (err) {
+                document.getElementById('data-container').innerHTML = "Hata oluştu, tekrar deneyin.";
                 console.error("Hata:", err);
             }
         }
@@ -74,7 +76,6 @@
         }
 
         fetchData();
-        setInterval(fetchData, 60000); // 1 dakikada bir güncelle
     </script>
 </body>
 </html>
