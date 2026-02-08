@@ -5,30 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>PWA FINANS</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; margin: 0; padding: 15px; }
-        .header { text-align: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 20px; color: #2c3e50; }
-        .container { display: flex; flex-direction: column; gap: 12px; }
-        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #f1c40f; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 15px; }
+        .header { text-align: center; font-weight: bold; font-size: 1.3rem; margin-bottom: 20px; color: #1a2a6c; }
+        .container { display: flex; flex-direction: column; gap: 10px; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #f1c40f; }
         .info { display: flex; flex-direction: column; }
-        .title { font-weight: bold; font-size: 1.1rem; color: #333; }
-        .time { font-size: 0.75rem; color: #999; margin-top: 4px; }
+        .title { font-weight: bold; font-size: 1rem; color: #333; text-transform: uppercase; }
+        .time { font-size: 0.7rem; color: #888; margin-top: 4px; }
         .prices { text-align: right; }
-        .buy { color: #27ae60; font-weight: bold; font-size: 1.1rem; display: block; }
+        .buy { color: #2ecc71; font-weight: bold; font-size: 1.1rem; display: block; }
         .sell { color: #e74c3c; font-weight: bold; font-size: 1.1rem; display: block; }
+        .group-title { font-size: 0.9rem; color: #7f8c8d; margin-top: 10px; padding-left: 5px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="header">GÜNCEL FİYATLAR</div>
+    <div class="header">CANLI PİYASA VERİLERİ</div>
     <div class="container" id="data-container">
-        <div class="card"><span>Veriler yükleniyor...</span></div>
+        <div class="card"><span>Veriler Firebase'den çekiliyor...</span></div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // Senin paylaştığın bilgilerle yapılandırdım
         const firebaseConfig = {
             apiKey: "AIzaSyAwQfifK4eaSrSjKpA776hD0RAlx_6a2_w",
             authDomain: "piyasa-9049c.firebaseapp.com",
@@ -42,32 +42,48 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Veritabanından veriyi anlık çekiyoruz
         db.ref("piyasa").on("value", (snapshot) => {
             const container = document.getElementById('data-container');
             const data = snapshot.val();
 
             if (data) {
                 container.innerHTML = '';
-                // Veritabanındaki her bir dövizi ekrana basar
-                Object.keys(data).forEach(key => {
-                    const item = data[key];
-                    container.innerHTML += `
-                        <div class="card">
-                            <div class="info">
-                                <span class="title">${item.Aciklama || key}</span>
-                                <span class="time">${item.GuncellenmeZamani || ''}</span>
-                            </div>
-                            <div class="prices">
-                                <span class="buy">AL: ${item.Alis}</span>
-                                <span class="sell">SAT: ${item.Satis}</span>
-                            </div>
-                        </div>`;
-                });
-            } else {
-                container.innerHTML = '<div class="card"><span>Veritabanı şu an boş!</span></div>';
+                
+                // ALTIN VERİLERİ
+                if(data.gold) {
+                    container.innerHTML += '<div class="group-title">ALTIN FİYATLARI</div>';
+                    data.gold.forEach(item => {
+                        if(["GA", "22", "18", "14"].includes(item.Kod)) { // Önemli olanları listele
+                            renderCard(container, item);
+                        }
+                    });
+                }
+
+                // DÖVİZ VERİLERİ
+                if(data.currency) {
+                    container.innerHTML += '<div class="group-title">DÖVİZ KURLARI</div>';
+                    data.currency.forEach(item => {
+                        if(["USD", "EUR", "GBP"].includes(item.Kod)) {
+                            renderCard(container, item);
+                        }
+                    });
+                }
             }
         });
+
+        function renderCard(container, item) {
+            container.innerHTML += `
+                <div class="card">
+                    <div class="info">
+                        <span class="title">${item.Aciklama}</span>
+                        <span class="time">${item.GuncellenmeZamani}</span>
+                    </div>
+                    <div class="prices">
+                        <span class="buy">AL: ${item.Alis}</span>
+                        <span class="sell">SAT: ${item.Satis}</span>
+                    </div>
+                </div>`;
+        }
     </script>
 </body>
 </html>
