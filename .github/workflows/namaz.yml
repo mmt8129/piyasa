@@ -15,4 +15,4 @@ jobs:
           VAKITLER=$(echo $RESPONSE | jq '.data.timings')
           
           # Veriyi Firebase'e gönder
-                    curl -X PUT -d "$VAKITLER" "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
+          curl -X PUT -d "$VAKITLER" "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
