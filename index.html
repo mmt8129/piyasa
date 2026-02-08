@@ -3,41 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>PWA FINANS</title>
+    <title>PRO DASHBOARD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Orbitron:wght@500&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 10px; }
-        .container { display: flex; flex-direction: column; gap: 8px; }
-        .weather-card { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 12px; border-radius: 12px; text-align: center; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .weather-temp { font-size: 2.2rem; font-weight: bold; }
-        .card { background: white; padding: 12px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #f1c40f; }
-        .buy { color: #2ecc71; font-weight: bold; font-size: 0.95rem; }
-        .sell { color: #e74c3c; font-weight: bold; font-size: 0.95rem; }
-        .group-title { font-size: 0.75rem; color: #7f8c8d; margin: 12px 0 6px 0; font-weight: bold; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
-        .news-container { background: white; border-radius: 12px; padding: 5px; margin-top: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .news-item { display: block; padding: 12px; border-bottom: 1px solid #eee; text-decoration: none; color: #2c3e50; font-size: 0.82rem; line-height: 1.4; }
-        .news-item:last-child { border-bottom: none; }
-        .news-item:active { background: #f9f9f9; }
-        .namaz-card { background: #1e1e1e; color: white; padding: 12px; border-radius: 10px; margin-top: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .namaz-grid { display: flex; justify-content: space-between; text-align: center; font-size: 0.65rem; }
-        .namaz-vakit { font-weight: bold; color: #f1c40f; font-size: 0.85rem; margin-top: 3px; }
+        :root { --orange: #ff8c00; --shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        body { font-family: 'Inter', sans-serif; background: #f4f7f6; margin: 0; padding: 15px; color: #333; overflow-x: hidden; }
+        
+        /* ÜST KARE KUTULAR */
+        .top-row { display: flex; gap: 15px; margin-bottom: 15px; height: 130px; }
+        .box { flex: 1; background: white; border: 1px solid var(--orange); border-radius: 15px; box-shadow: var(--shadow); padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; position: relative; overflow: hidden; }
+        
+        /* HAVA DURUMU */
+        .weather-icon { font-size: 40px; margin-bottom: 5px; }
+        .weather-temp { font-size: 22px; font-weight: bold; }
+        .weather-desc { font-size: 11px; text-transform: uppercase; color: #777; }
+
+        /* PİYASA DÖNGÜSÜ */
+        .market-slider { width: 100%; height: 100%; position: relative; }
+        .market-item { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; opacity: 0; }
+        .market-item.active { opacity: 1; }
+        .market-val { color: #2ecc71; font-weight: bold; font-size: 18px; margin-top: 5px; }
+
+        /* NAMAZ DİKDÖRTGEN */
+        .namaz-strip { background: white; border: 1px solid var(--orange); border-radius: 12px; box-shadow: var(--shadow); padding: 12px; display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; cursor: pointer; }
+        .namaz-label { font-size: 13px; font-weight: bold; color: #555; }
+        .namaz-time { font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: bold; color: #222; }
+
+        /* TURUNCU ÇİZGİ */
+        .separator { height: 3px; background: linear-gradient(to right, transparent, var(--orange), transparent); margin-bottom: 20px; box-shadow: 0 2px 5px rgba(255,140,0,0.3); }
+
+        /* HABERLER */
+        .news-card { background: white; border: 1px solid var(--orange); border-radius: 12px; box-shadow: var(--shadow); display: flex; margin-bottom: 12px; overflow: hidden; height: 90px; cursor: pointer; }
+        .news-img { width: 90px; height: 90px; object-fit: cover; background: #eee; }
+        .news-content { flex: 1; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; }
+        .news-title { font-size: 13px; font-weight: bold; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .news-source { font-size: 10px; color: var(--orange); font-weight: bold; }
+
+        /* PENCERELER (MODAL) */
+        .modal { display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: flex-end; }
+        .modal-content { background: white; width: 90%; max-height: 70%; border-radius: 20px 20px 0 0; border: 1px solid var(--orange); padding: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.2); animation: slideUp 0.3s ease-out; overflow-y: auto; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .close-btn { background: var(--orange); color: white; border: none; width: 100%; padding: 12px; border-radius: 10px; font-weight: bold; margin-top: 15px; }
+        .modal-list-item { padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-size: 14px; }
+
+        /* HABER DETAY */
+        .news-detail-img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
+        .news-detail-text { font-size: 14px; line-height: 1.5; color: #444; }
+        .go-site { background: #2a5298; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; text-decoration: none; display: block; text-align: center; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="weather-card">
-        <div style="font-size: 0.65rem; opacity:0.8; letter-spacing: 1px;">ANKARA</div>
-        <div class="weather-temp" id="derece">--°C</div>
-        <div id="durum" style="font-size:0.8rem; text-transform:uppercase; font-weight: 500;">Yükleniyor...</div>
+    <div class="top-row">
+        <div class="box" onclick="openModal('modal-weather')">
+            <div id="w-icon" class="weather-icon">☀️</div>
+            <div id="w-temp" class="weather-temp">--°C</div>
+            <div id="w-desc" class="weather-desc">Yükleniyor</div>
+        </div>
+        <div class="box" onclick="openModal('modal-market')">
+            <div class="market-slider" id="market-slider">
+                <div class="market-item active"><span>USD/TRY</span><span class="market-val" id="slide-usd">--</span></div>
+                <div class="market-item"><span>EUR/TRY</span><span class="market-val" id="slide-eur">--</span></div>
+                <div class="market-item"><span>GRAM ALTIN</span><span class="market-val" id="slide-ga">--</span></div>
+            </div>
+        </div>
     </div>
 
-    <div id="data-container" class="container"></div>
-
-    <div class="group-title">GÜNCEL MANŞETLER (12 HABER)</div>
-    <div class="news-container" id="news-container">
-        <div style="text-align:center; padding:20px; font-size:0.8rem; color:#999;">Haberler yükleniyor...</div>
+    <div class="namaz-strip" onclick="openModal('modal-namaz')">
+        <span id="n-next-name" class="namaz-label">SIRADAKİ: --</span>
+        <span id="n-next-time" class="namaz-time">--:--</span>
     </div>
 
-    <div id="namaz-alani"></div>
+    <div class="separator"></div>
+
+    <div id="news-list"></div>
+
+    <div id="modal-weather" class="modal"><div class="modal-content"><h3>5 GÜNLÜK HAVA</h3><div id="list-weather"></div><button class="close-btn" onclick="closeModal()">TAMAM</button></div></div>
+    <div id="modal-market" class="modal"><div class="modal-content"><h3>TÜM PİYASALAR</h3><div id="list-market"></div><button class="close-btn" onclick="closeModal()">TAMAM</button></div></div>
+    <div id="modal-namaz" class="modal"><div class="modal-content"><h3>VAKİTLER</h3><div id="list-namaz"></div><button class="close-btn" onclick="closeModal()">TAMAM</button></div></div>
+    <div id="modal-news" class="modal"><div class="modal-content" id="news-detail-content"></div></div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -45,78 +89,117 @@
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAwQfifK4eaSrSjKpA776hD0RAlx_6a2_w",
-            authDomain: "piyasa-9049c.firebaseapp.com",
             databaseURL: "https://piyasa-9049c-default-rtdb.firebaseio.com",
-            projectId: "piyasa-9049c",
-            storageBucket: "piyasa-9049c.firebasestorage.app",
-            messagingSenderId: "1093294750752",
-            appId: "1:1093294750752:web:55a68803bae9e61da1d045"
+            projectId: "piyasa-9049c"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // HAVA DURUMU ÇEK
-        db.ref("hava/current_condition/0").on("value", s => {
+        // 1. HAVA DURUMU SİSTEMİ
+        db.ref("hava").on("value", s => {
             const d = s.val();
-            if(d) {
-                document.getElementById('derece').innerText = d.temp_C + "°C";
-                document.getElementById('durum').innerText = d.lang_tr ? d.lang_tr[0].value : d.weatherDesc[0].value;
-            }
+            if(!d) return;
+            const cur = d.current_condition[0];
+            document.getElementById('w-temp').innerText = cur.temp_C + "°C";
+            document.getElementById('w-desc').innerText = cur.lang_tr[0].value;
+            document.getElementById('w-icon').innerText = getWeatherEmoji(cur.weatherCode);
+
+            let listHtml = '';
+            d.weather.slice(0, 5).forEach(day => {
+                listHtml += `<div class="modal-list-item"><span>${day.date}</span><span>${getWeatherEmoji(day.hourly[4].weatherCode)} ${day.maxtempC}° / ${day.mintempC}°</span></div>`;
+            });
+            document.getElementById('list-weather').innerHTML = listHtml;
         });
 
-        // PİYASA VERİLERİNİ ÇEK
+        // 2. PİYASA DÖNGÜSÜ (3 Saniye)
+        let slideIdx = 0;
+        setInterval(() => {
+            const items = document.querySelectorAll('.market-item');
+            items[slideIdx].classList.remove('active');
+            slideIdx = (slideIdx + 1) % items.length;
+            items[slideIdx].classList.add('active');
+        }, 3000);
+
         db.ref("piyasa").on("value", s => {
             const data = s.val();
-            const c = document.getElementById('data-container');
-            if(data) {
-                c.innerHTML = '<div class="group-title">ALTIN VE DÖVİZ</div>';
-                if(data.gold) data.gold.forEach(i => { if(["GA","22"].includes(i.Kod)) renderC(c,i); });
-                if(data.currency) data.currency.forEach(i => { if(["USD","EUR"].includes(i.Kod)) renderC(c,i); });
-            }
+            if(!data) return;
+            document.getElementById('slide-usd').innerText = data.currency.find(x=>x.Kod=="USD").Satis;
+            document.getElementById('slide-eur').innerText = data.currency.find(x=>x.Kod=="EUR").Satis;
+            document.getElementById('slide-ga').innerText = data.gold.find(x=>x.Kod=="GA").Satis;
+
+            let listHtml = '';
+            data.gold.concat(data.currency).forEach(i => {
+                listHtml += `<div class="modal-list-item"><span>${i.Aciklama}</span><span style="color:green;font-weight:bold">${i.Satis}</span></div>`;
+            });
+            document.getElementById('list-market').innerHTML = listHtml;
         });
 
-        // 3 KAYNAKTAN 4'ER HABER (TOPLAM 12)
-        const nContainer = document.getElementById('news-container');
-        const kaynaklar = ['haber_trt', 'haber_cnn', 'haber_ntv'];
-        
-        // Verileri dinle ve birleştir
-        let allNews = { 'haber_trt': [], 'haber_cnn': [], 'haber_ntv': [] };
-        kaynaklar.forEach(k => {
+        // 3. NAMAZ VAKTİ
+        db.ref("namaz/items/0").on("value", s => {
+            const n = s.val();
+            if(!n) return;
+            const vakitler = { "İMSAK": n.fajr, "ÖĞLE": n.dhuhr, "İKİNDİ": n.asr, "AKŞAM": n.maghrib, "YATSI": n.isha };
+            
+            // Sıradaki vakti bul (Basit mantık)
+            let now = new Date().getHours() + ":" + new Date().getMinutes();
+            let next = "İMSAK", time = n.fajr;
+            for(let v in vakitler) { if(vakitler[v] > now) { next = v; time = vakitler[v]; break; } }
+            
+            document.getElementById('n-next-name').innerText = "SIRADAKİ: " + next;
+            document.getElementById('n-next-time').innerText = time;
+
+            let listHtml = '';
+            for(let v in vakitler) { listHtml += `<div class="modal-list-item"><span>${v}</span><span class="namaz-time" style="font-size:16px">${vakitler[v]}</span></div>`; }
+            document.getElementById('list-namaz').innerHTML = listHtml;
+        });
+
+        // 4. HABERLER (KARIŞIK)
+        const sources = { 'haber_trt': 'TRT HABER', 'haber_cnn': 'CNN TÜRK', 'haber_ntv': 'NTV' };
+        let allNews = [];
+        Object.keys(sources).forEach(k => {
             db.ref(k + "/items").on("value", s => {
-                allNews[k] = s.val() ? s.val().slice(0, 4) : [];
-                renderNews();
+                if(s.val()) {
+                    const newsWithSrc = s.val().slice(0,4).map(i => ({...i, src: sources[k]}));
+                    allNews = allNews.filter(x => x.src !== sources[k]).concat(newsWithSrc);
+                    renderNews();
+                }
             });
         });
 
         function renderNews() {
-            nContainer.innerHTML = '';
-            kaynaklar.forEach(k => {
-                allNews[k].forEach(i => {
-                    nContainer.innerHTML += `<a href="${i.link}" target="_blank" class="news-item">🔹 ${i.title}</a>`;
-                });
+            const container = document.getElementById('news-list');
+            container.innerHTML = '';
+            allNews.forEach((n, index) => {
+                const img = n.enclosure ? n.enclosure.link : (n.thumbnail || 'https://via.placeholder.com/90?text='+n.src);
+                container.innerHTML += `
+                    <div class="news-card" onclick="showNewsDetail(${index})">
+                        <img src="${img}" class="news-img">
+                        <div class="news-content">
+                            <div class="news-title">${n.title}</div>
+                            <div class="news-source">${n.src}</div>
+                        </div>
+                    </div>`;
             });
         }
 
-        // NAMAZ VAKİTLERİNİ ÇEK
-        db.ref("namaz/items/0").on("value", s => {
-            const n = s.val();
-            if(n) {
-                document.getElementById('namaz-alani').innerHTML = `
-                    <div class="namaz-card">
-                        <div style="text-align:center; font-size:0.6rem; opacity:0.6; margin-bottom:8px; letter-spacing:1px;">ANKARA VAKİTLERİ</div>
-                        <div class="namaz-grid">
-                            <div>İmsak<br><span class="namaz-vakit">${n.fajr}</span></div>
-                            <div>Öğle<br><span class="namaz-vakit">${n.dhuhr}</span></div>
-                            <div>İkindi<br><span class="namaz-vakit">${n.asr}</span></div>
-                            <div>Akşam<br><span class="namaz-vakit">${n.maghrib}</span></div>
-                            <div>Yatsı<br><span class="namaz-vakit">${n.isha}</span></div>
-                        </div>
-                    </div>`;
-            }
-        });
+        function showNewsDetail(idx) {
+            const n = allNews[idx];
+            const img = n.enclosure ? n.enclosure.link : (n.thumbnail || '');
+            document.getElementById('news-detail-content').innerHTML = `
+                <h3>${n.title}</h3>
+                ${img ? `<img src="${img}" class="news-detail-img">` : ''}
+                <div class="news-detail-text">${n.description || 'Haber içeriği yüklenemedi.'}</div>
+                <a href="${n.link}" target="_blank" class="go-site">SİTEYE GİT</a>
+                <button class="close-btn" onclick="closeModal()">TAMAM</button>`;
+            openModal('modal-news');
+        }
 
-        function renderC(c, i) {
-            c.innerHTML += `<div class="card"><div><span style="font-weight:bold; font-size:0.85rem; color:#333;">${i.Aciklama}</span></div><div style="text-align:right"><span class="buy">${i.Alis}</span><br><span class="sell">${i.Satis}</span></div></div>`;
+        // YARDIMCI FONKSİYONLAR
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+        function getWeatherEmoji(code) {
+            const map = {"113":"☀️","116":"⛅","119":"☁️","122":"☁️","263":"🌦️","266":"🌦️","302":"🌧️","308":"🌧️","338":"❄️"};
+            return map[code] || "☀️";
         }
     </script>
 </body>
