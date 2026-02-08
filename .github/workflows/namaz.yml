@@ -10,6 +10,5 @@ jobs:
     steps:
       - name: Veri Cek ve Gonder
         run: |
-          # Direkt tum datayi cekip Firebase'e basıyoruz
           curl -s "https://api.aladhan.com/v1/timingsByCity?city=Ankara&country=Turkey&method=13" > data.json
           curl -X PUT -d @data.json "https://piyasa-9049c-default-rtdb.firebaseio.com/namaz.json"
