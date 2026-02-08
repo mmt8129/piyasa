@@ -16,7 +16,7 @@ jobs:
           
           # 4 Farklı Kaynaktan Haberler
           curl -s "https://api.rss2json.com/v1/api.json?rss_url=https://www.trthaber.com/manset_articles.rss" > haber_trt.json
-          curl -s "https://api.rss2json.com/v1/api.json?rss_url=https://www.haberler.com/rss/manset/" > haber_haberler.json
+          curl -s "https://api.rss2json.com/v1/api.json?rss_url=https://rss.haberler.com/rss.asp?kategori=manset" > haber_haberler.json
           curl -s "https://api.rss2json.com/v1/api.json?rss_url=https://www.ntv.com.tr/gundem.rss" > haber_ntv.json
           curl -s "https://api.rss2json.com/v1/api.json?rss_url=https://www.cnnturk.com/feed/rss/all/news" > haber_cnn.json
           
