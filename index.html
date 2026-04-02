@@ -2,346 +2,547 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>PRO DASHBOARD</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>EDEL | Üretim Araçları</title>
+    <meta name="theme-color" content="#1976D2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="mobile-web-app-capable" content="yes">
     <style>
-        :root { --orange: #ff8c00; --shadow: 0 4px 15px rgba(0,0,0,0.15); }
-        body { font-family: 'Inter', sans-serif; background: #f4f7f6; margin: 0; padding: 15px; color: #333; overflow-x: hidden; }
-        
-        /* ÜST KARE KUTULAR */
-        .top-row { display: flex; gap: 15px; margin-bottom: 15px; height: 130px; }
-        .box { flex: 1; background: white; border: 1px solid var(--orange); border-radius: 15px; box-shadow: var(--shadow); padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; position: relative; overflow: hidden; }
-        
-        /* HAVA DURUMU */
-        .weather-icon { font-size: 30px; margin-bottom: 5px; }
-        .weather-temp { font-size: 22px; font-weight: bold; }
-        .weather-desc { font-size: 11px; text-transform: uppercase; color: #777; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        /* PİYASA DÖNGÜSÜ */
-		.ok-up { color: #2ecc71; font-weight: bold; margin-left: 5px; } /* Yeşil */
-        .ok-down { color: #e74c3c; font-weight: bold; margin-left: 5px; } /* Kırmızı */
-         .market-slider { width: 100%; height: 100%; position: relative; }
-        /*.market-item { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; opacity: 0; }
-        /* .market-item.active { opacity: 1; }
-         .market-val { color: #2ecc71; font-weight: bold; font-size: 18px; margin-top: 5px; }
+        body {
+            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, 'Inter', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-/* ANA KUTUDAKİ ÜÇLÜYÜ YAN YANA DİZER VE KAYDIRIR */
-#market-slider {
-    display: flex;
-    align-items: center;
-    overflow: hidden; /* Dışarı taşanı gizle */
-    width: 100%;
-    height: 100%;
-}
+        /* ===== ANA SAYFA STİLLERİ (Tezgah Panosu teması) ===== */
+        .sticky-banner {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #1976D2;
+            border-bottom: 3px solid #ffffff;
+            padding: 1rem 1.5rem;
+        }
 
-.market-track {
-    display: flex;
-    white-space: nowrap;
-    width: max-content; /* İçerik kadar genişle */
-    animation: piyasaKAY 8s linear infinite; /* Hızı 12sn yaparak biraz serileştirdik */
-}
+        .banner-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
 
-.market-item {
-    display: flex;
-    align-items: center;
-    padding-right: 20px; /* Aralarındaki boşluk */
-    flex-shrink: 0; /* Sıkışmalarını engelle */
-}
+        .title-area h1 {
+            font-size: 2.0rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
 
-@keyframes piyasaKAY {
-    0% { transform: translateX(0); } /* En baştan başla */
-    100% { transform: translateX(-50%); } /* Yarıya kadar kay (ikiz kopya sayesinde kesilmez) */
-}
+        .title-area p {
+            font-size: 1.0rem;
+            color: #ffffff;
+            margin-top: 4px;
+        }
 
-/* YENİLEME BUTONU POZİSYONU */
-/*#market-slider { position: relative; } /* Üstüne eklenecek buton için temel */
-/* .piyasa-yenile-btn {
-   /* position: absolute;
-   /* right: 5px;
-   /* bottom: 5px;
-   /* font-size: 14px;
-   /* background: rgba(255,255,255,0.7);
-   /* border-radius: 50%;
-   /* width: 22px;
-   /* height: 22px;
-   /* display: flex;
-   /* align-items: center;
-   /* justify-content: center;
-   /* z-index: 20;
-   /* box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-/* }
+        .dashboard {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
 
-        /* NAMAZ DİKDÖRTGEN */
-        .namaz-strip { background: white; border: 1px solid var(--orange); border-radius: 12px; box-shadow: var(--shadow); padding: 12px; display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; cursor: pointer; }
-        .namaz-label { font-size: 13px; font-weight: bold; color: #555; }
-        .namaz-time { font-family: 'Inter', sans-serif; font-size: 30px; font-weight: 700; color: #222; letter-spacing: 2px; /* Rakamları birbirine biraz yaklaştırıp tok durmasını sağladık */}
+        .app-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
 
-        /* TURUNCU ÇİZGİ */
-        .separator { height: 3px; background: linear-gradient(to right, transparent, var(--orange), transparent); margin-bottom: 20px; box-shadow: 0 2px 5px rgba(255,140,0,0.3); }
+        .app-btn {
+            background: #1976D2;
+            border-radius: 1.2rem;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid #1976D2;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            color: #ffffff;
+        }
 
-        /* HABERLER */
-        .news-card { background: white; border: 1px solid var(--orange); border-radius: 12px; box-shadow: var(--shadow); display: flex; margin-bottom: 12px; overflow: hidden; height: 90px; cursor: pointer; }
-        .news-img { width: 90px; height: 90px; object-fit: cover; background: #eee; }
-        .news-content { flex: 1; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; }
-        .news-title { font-size: 13px; font-weight: bold; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-        .news-source { font-size: 10px; color: var(--orange); font-weight: bold; }
+        .app-btn:active {
+            transform: translateY(3px);
+        }
 
-        /* PENCERELER (MODAL) */
-        .modal { display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: flex-end; }
-        .modal-content { background: white; width: 90%; max-height: 70%; border-radius: 20px 20px 0 0; border: 1px solid var(--orange); padding: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.2); animation: slideUp 0.3s ease-out; overflow-y: auto; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .close-btn { background: var(--orange); color: white; border: none; width: 100%; padding: 12px; border-radius: 10px; font-weight: bold; margin-top: 15px; }
-        .modal-list-item { padding: 18px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; }
+        .app-icon {
+            font-size: 2rem;
+        }
 
-        /* HABER DETAY */
-        .news-detail-img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
-        .news-detail-text { font-size: 14px; line-height: 1.5; color: #444; }
-        .go-site { background: #2a5298; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; text-decoration: none; display: block; text-align: center; margin-top: 10px; }
+        .app-text {
+            flex: 1;
+        }
+
+        .app-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .app-desc {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .external-icon {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        /* ===== UYGULAMA KAPSAYICI ===== */
+        .app-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 200;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .app-container.active {
+            transform: translateX(0);
+        }
+
+        .app-content {
+            width: 100%;
+            min-height: 100%;
+            background: inherit;
+        }
+
+        /* Geri butonu (sadece mobil için opsiyonel, Android fiziksel buton da çalışır) */
+        .back-to-home {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1976D2;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 250;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .back-to-home:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 600px) {
+            .sticky-banner {
+                padding: 0.8rem 1rem;
+            }
+            .title-area h1 {
+                font-size: 1.5rem;
+            }
+            .title-area p {
+                font-size: 0.75rem;
+            }
+            .dashboard {
+                margin: 1.5rem auto;
+                padding: 0 1rem;
+            }
+            .app-btn {
+                padding: 1rem 1.2rem;
+            }
+            .app-name {
+                font-size: 1.1rem;
+            }
+            .app-icon {
+                font-size: 1.6rem;
+            }
+        }
+
+        /* Modal (tezgah panosundaki gibi onay modalı) */
+        .confirm-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1100;
+        }
+        .confirm-modal-container {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            padding: 1.8rem;
+            max-width: 340px;
+            width: 80%;
+            text-align: center;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.5);
+            border: 1px solid #e0e0e0;
+        }
+        .confirm-modal-container p {
+            color: #333333;
+            margin-bottom: 1.8rem;
+            font-size: 1rem;
+        }
+        .confirm-modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #3498db;
+            color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .btn-danger {
+            background: #e74c3c;
+        }
+        .btn-danger:hover {
+            background: #ec7063;
+        }
     </style>
 </head>
 <body>
 
-    <div class="top-row">
-        <div class="box" onclick="openModal('modal-weather')">
-            <div id="w-icon" class="weather-icon">☀️</div>
-            <div id="w-temp" class="weather-temp">--°C</div>
-            <div id="w-desc" class="weather-desc">Yükleniyor</div>
-        </div>
-        <div class="box" onclick="openModal('modal-market')">
-            <div class="market-slider" id="market-slider">
-                <div class="market-item active"><span>USD/TRY</span><span class="market-val" id="slide-usd">--</span></div>
-                <div class="market-item"><span>EUR/TRY</span><span class="market-val" id="slide-eur">--</span></div>
-                <div class="market-item"><span>GRAM ALTIN</span><span class="market-val" id="slide-ga">--</span></div>
+<!-- ANA SAYFA -->
+<div id="homePage">
+    <div class="sticky-banner">
+        <div class="banner-content">
+            <div class="title-area">
+                <h1>EDEL</h1>
+                <p>ÜRETİM ARAÇLARI</p>
             </div>
         </div>
     </div>
-
-    <div class="namaz-strip" onclick="openModal('modal-namaz')">
-        <span id="n-next-name" class="namaz-label">SONRAKİ: --</span>
-        <span id="n-next-time" class="namaz-time">--:--</span>
+    <div class="dashboard">
+        <div class="app-buttons">
+            <div class="app-btn" data-app="tezgah">
+                <div class="app-icon">⚙️</div>
+                <div class="app-text">
+                    <div class="app-name">TEZGAH PANOSU</div>
+                    <div class="app-desc">Üretim kayıt girişi ve tezgah seçimi</div>
+                </div>
+            </div>
+            <div class="app-btn" data-app="aktif-partiler" data-external="true">
+                <div class="app-icon">📋</div>
+                <div class="app-text">
+                    <div class="app-name">AKTİF PARTİLER</div>
+                    <div class="app-desc">Üretim partilerini görüntüle</div>
+                </div>
+                <div class="external-icon">🔗</div>
+            </div>
+            <div class="app-btn" data-app="depo">
+                <div class="app-icon">📦</div>
+                <div class="app-text">
+                    <div class="app-name">DEPO RAF BULUCU</div>
+                    <div class="app-desc">Parça arama ve raf lokasyonu</div>
+                </div>
+            </div>
+            <div class="app-btn" data-app="hesap">
+                <div class="app-icon">🧮</div>
+                <div class="app-text">
+                    <div class="app-name">HESAP MAKİNESİ</div>
+                    <div class="app-desc">Merkez & dairesel mesafe hesaplama</div>
+                </div>
+            </div>
+            <div class="app-btn" data-app="notlar">
+                <div class="app-icon">📝</div>
+                <div class="app-text">
+                    <div class="app-name">RESİMLİ NOTLAR</div>
+                    <div class="app-desc">Parça notları ve fotoğraflar</div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div class="separator"></div>
+<!-- UYGULAMALARIN YERLEŞTİRİLECEĞİ KAPSAYICILAR -->
+<div id="tezgahContainer" class="app-container"></div>
+<div id="depoContainer" class="app-container"></div>
+<div id="hesapContainer" class="app-container"></div>
+<div id="notlarContainer" class="app-container"></div>
 
-    <div id="news-list"></div>
+<!-- Geri butonu (sadece uygulama açıkken görünür) -->
+<button id="backButton" class="back-to-home" style="display: none;">←</button>
 
-    <div id="modal-weather" class="modal"><div class="modal-content"><h3>5 GÜNLÜK HAVA</h3><div id="list-weather"></div><button class="close-btn" onclick="closeModal()">TAMAM</button></div></div>
-    <div id="modal-market" class="modal"><div class="modal-content"><h3>TÜM PİYASALAR</h3><div id="list-market"></div><button class="close-btn" onclick="closeModal()">TAMAM</button></div></div>
-    <div id="modal-namaz" class="modal"><div class="modal-content"><h3>VAKİTLER</h3><div id="list-namaz"></div><button class="close-btn" onclick="closeModal()">TAMAM</button></div></div>
-    <div id="modal-news" class="modal"><div class="modal-content" id="news-detail-content"></div></div>
+<script>
+    // ======================= TEZGAH PANOSU KODU (orijinal) =======================
+    const tezgahHTML = `<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Tezgah Panosu | edelkrone</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, 'Inter', sans-serif; }
+        body { background: #ffffff; min-height: 100vh; padding: 0; }
+        .sticky-banner { position: sticky; top: 0; z-index: 100; background: #1976D2; border-bottom: 3px solid #ffffff; padding: 1rem 1.5rem; }
+        .banner-content { max-width: 1400px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; }
+        .title-area h1 { font-size: 2.0rem; font-weight: 700; color: #ffffff; }
+        .title-area p { font-size: 1.0rem; color: #ffffff; margin-top: 4px; }
+        .stats-area { display: flex; gap: 1.5rem; background: rgba(255,255,255,0.2); padding: 0.4rem 1rem; border-radius: 40px; font-size: 0.8rem; font-weight: 500; }
+        .stats-area span { color: #ffffff; }
+        .stats-area .count { font-weight: 700; color: #ffffff; margin-left: 0.3rem; }
+        .button-group { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+        .btn { padding: 0.6rem 1.2rem; border-radius: 40px; font-weight: 600; font-size: 0.85rem; border: none; cursor: pointer; transition: all 0.2s ease; background: #3498db; color: white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+        .btn:active { transform: scale(0.96); }
+        .btn-danger { background: #e74c3c; }
+        .btn-secondary { background: #555; }
+        .dashboard { max-width: 1400px; margin: 2rem auto; padding: 0 1.5rem; }
+        .bench-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .bench-card { background: #1976D2; border-radius: 1.2rem; padding: 1.2rem 0.8rem; text-align: center; cursor: pointer; transition: all 0.2s ease; border: 2px solid #1976D2; box-shadow: 0 4px 12px rgba(0,0,0,0.2); position: relative; user-select: none; color: #ffffff; }
+        .bench-card:active { transform: translateY(3px); }
+        .bench-card.selected { background: #b91c1c; border-color: #b91c1c; color: white; }
+        .check-mark { position: absolute; top: 8px; left: 12px; font-size: 1.4rem; font-weight: bold; color: white; }
+        .click-time { position: absolute; bottom: 6px; right: 10px; font-size: 0.65rem; color: rgba(255,255,255,0.9); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 12px; }
+        .bench-icon { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+        .bench-name { font-size: 1.3rem; font-weight: 700; }
+        .divider { margin: 2rem 0 1rem 0; border-top: 3px solid #1976D2; width: 100%; }
+        .section-title { color: #1976D2; font-size: 1.2rem; font-weight: 600; margin: 1rem 0 1.5rem 0; border-left: 4px solid #1976D2; padding-left: 1rem; }
+        @media (max-width: 900px) { .bench-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .bench-grid { gap: 0.8rem; } .bench-card { padding: 0.8rem 0.4rem; } .bench-name { font-size: 1rem; } .bench-icon { font-size: 1.5rem; } .check-mark { font-size: 1rem; } .click-time { font-size: 0.55rem; } }
+        .confirm-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1100; }
+        .confirm-modal-container { background: #ffffff; border-radius: 1.5rem; padding: 1.8rem; max-width: 340px; width: 80%; text-align: center; }
+        .confirm-modal-container p { color: #333333; margin-bottom: 1.8rem; }
+        .confirm-modal-buttons { display: flex; gap: 1rem; justify-content: center; }
+    </style>
+</head>
+<body>
+<div class="sticky-banner"><div class="banner-content"><div class="title-area"><h1>⚙️ TEZGAH PANOSU</h1><p>ÜRETİM KAYIT GİRİŞ</p></div><div class="stats-area" id="statsArea"><span>📊 TOPLAM: <span id="totalCount" class="count">0</span></span><span>✅ SEÇİLİ: <span id="selectedCount" class="count">0</span></span><span>❌ SEÇİLMEYEN: <span id="unselectedCount" class="count">0</span></span></div><div class="button-group" id="buttonGroup"></div></div></div>
+<div class="dashboard" id="dashboard"></div>
+<script>
+const benchesMaster = [
+    { name: "3A", benchId: 26, selectable: true }, { name: "4A", benchId: 21, selectable: true }, { name: "4B", benchId: 11, selectable: true },
+    { name: "4C", benchId: 12, selectable: true }, { name: "3B", benchId: 36, selectable: true }, { name: "3C", benchId: 30, selectable: true },
+    { name: "3D", benchId: 31, selectable: true }, { name: "5D", benchId: 14, selectable: true }, { name: "5C", benchId: 10, selectable: true },
+    { name: "TORNA1", benchId: 17, selectable: true }, { name: "TORNA2", benchId: 18, selectable: true }, { name: "TORNA3", benchId: 43, selectable: true },
+    { name: "TORNA4", benchId: 2, selectable: true }, { name: "3E", benchId: 35, selectable: true }, { name: "K1", benchId: 33, selectable: true },
+    { name: "5I", benchId: 42, selectable: true }, { name: "5H", benchId: 41, selectable: true }, { name: "5G", benchId: 40, selectable: true },
+    { name: "5F", benchId: 39, selectable: true }, { name: "5E", benchId: 29, selectable: true }, { name: "TS1", benchId: 38, selectable: true }
+];
+const STORAGE_KEY = "edelkrone_bench_selections";
+const CLICK_STORAGE_KEY = "edelkrone_bench_clicks";
+const BASE_URL = "https://uys.edelkrone.com/Manufacturing/ProductionRecords/Create?benchId=";
+let currentMode = "edit";
+let selectedIds = new Set();
+let pendingChanges = new Set();
+function isMobile() { return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent); }
+function saveClickTime(benchId) { if(!benchId) return; const clicks = JSON.parse(localStorage.getItem(CLICK_STORAGE_KEY) || "{}"); clicks[benchId] = new Date().toISOString(); localStorage.setItem(CLICK_STORAGE_KEY, JSON.stringify(clicks)); }
+function getFormattedClickTime(benchId) { if(!benchId) return ""; const clicks = JSON.parse(localStorage.getItem(CLICK_STORAGE_KEY) || "{}"); const isoString = clicks[benchId]; if(!isoString) return ""; const date = new Date(isoString); return date.getDate() + " " + date.toLocaleString('tr-TR', { month: 'short' }).replace('.', '') + " " + date.getHours().toString().padStart(2,'0')+":"+date.getMinutes().toString().padStart(2,'0'); }
+function openLink(url, benchId) { if(benchId) saveClickTime(benchId); if(isMobile()) window.open(url, '_blank'); else { const width=1000,height=800; window.open(url,'tezgahDetay',"width="+width+",height="+height+",resizable=yes,scrollbars=yes"); } }
+function loadFromStorage() { const saved = localStorage.getItem(STORAGE_KEY); if(saved) { const data = JSON.parse(saved); selectedIds.clear(); if(data.selectedIds) data.selectedIds.forEach(id=>selectedIds.add(id)); if(data.currentMode && data.currentMode !== "showAllWithSplit") currentMode = data.currentMode; else currentMode = selectedIds.size>0?"showSelected":"edit"; } }
+function saveToStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ selectedIds: [...selectedIds], currentMode: currentMode })); }
+function isSelected(bench, usePending=false) { if(!bench.selectable) return false; if(usePending && currentMode==="showAllWithSplit") return pendingChanges.has(bench.benchId); return selectedIds.has(bench.benchId); }
+function toggleSelect(bench, usePending=false) { if(!bench.selectable) { showConfirmModal("Uyarı", bench.name+" için tezgah ID'si girilmemiş.", null, null); return false; } if(usePending && currentMode==="showAllWithSplit") { if(pendingChanges.has(bench.benchId)) pendingChanges.delete(bench.benchId); else pendingChanges.add(bench.benchId); } else { if(selectedIds.has(bench.benchId)) selectedIds.delete(bench.benchId); else selectedIds.add(bench.benchId); saveToStorage(); } updateStats(); render(); return true; }
+function selectAll() { benchesMaster.forEach(b=>{if(b.selectable) selectedIds.add(b.benchId);}); saveToStorage(); updateStats(); render(); }
+function clearAll() { selectedIds.clear(); saveToStorage(); updateStats(); render(); }
+function updateStats() { let selectedCount=0, unselectedCount=0; benchesMaster.forEach(b=>{if(b.selectable){if(currentMode==="showAllWithSplit"){if(pendingChanges.has(b.benchId)) selectedCount++; else unselectedCount++;}else{if(selectedIds.has(b.benchId)) selectedCount++; else unselectedCount++;}}else unselectedCount++;}); document.getElementById('totalCount').innerText=benchesMaster.length; document.getElementById('selectedCount').innerText=selectedCount; document.getElementById('unselectedCount').innerText=unselectedCount; }
+function showConfirmModal(title, message, onConfirm, onCancel=null) { const modalDiv = document.createElement('div'); modalDiv.className = 'confirm-modal-overlay'; modalDiv.innerHTML = '<div class="confirm-modal-container"><p><strong>'+title+'</strong><br>'+message+'</p><div class="confirm-modal-buttons"><button class="btn" id="modalConfirm">Tamam</button><button class="btn btn-danger" id="modalCancel">İptal</button></div></div>'; document.body.appendChild(modalDiv); document.getElementById('modalConfirm').onclick = () => { if(onConfirm) onConfirm(); modalDiv.remove(); }; document.getElementById('modalCancel').onclick = () => { if(onCancel) onCancel(); modalDiv.remove(); }; }
+function renderCard(bench, isSelectedFlag, showTick=true, showTime=false) { return '<div class="bench-card '+(isSelectedFlag?"selected":"")+'" data-name="'+bench.name+'" data-id="'+bench.benchId+'" data-selectable="'+bench.selectable+'">'+(isSelectedFlag&&showTick?'<div class="check-mark">✓</div>':'')+'<div class="bench-icon">🔧</div><div class="bench-name">'+bench.name+'</div>'+(showTime&&bench.benchId?'<div class="click-time">'+getFormattedClickTime(bench.benchId)+'</div>':'')+'</div>'; }
+function attachCardEvents(mode) { document.querySelectorAll('.bench-card').forEach(card=>{ const benchName = card.getAttribute('data-name'); const bench = benchesMaster.find(b=>b.name===benchName); if(!bench) return; card.onclick = (e)=>{ e.stopPropagation(); if(mode==="edit") toggleSelect(bench,false); else if(mode==="showAllWithSplit"){ if(!bench.selectable){ showConfirmModal("Uyarı",bench.name+" için ID girilmemiş.",null,null); return; } if(pendingChanges.has(bench.benchId)){ pendingChanges.delete(bench.benchId); card.classList.remove('selected'); const tick = card.querySelector('.check-mark'); if(tick) tick.remove(); }else{ pendingChanges.add(bench.benchId); card.classList.add('selected'); if(!card.querySelector('.check-mark')){ const tickSpan = document.createElement('div'); tickSpan.className='check-mark'; tickSpan.innerText='✓'; card.insertBefore(tickSpan, card.firstChild); } } updateStats(); } else if(mode==="showSelected"){ if(!bench.selectable){ showConfirmModal("Uyarı",bench.name+" için ID bulunamadı.",null,null); return; } const url = BASE_URL+bench.benchId; openLink(url, bench.benchId); const timeDiv = card.querySelector('.click-time'); if(timeDiv) timeDiv.innerText = getFormattedClickTime(bench.benchId); else{ const newTimeDiv = document.createElement('div'); newTimeDiv.className='click-time'; newTimeDiv.innerText = getFormattedClickTime(bench.benchId); card.appendChild(newTimeDiv); } } }; }); }
+function render() { const dashboard = document.getElementById('dashboard'); const buttonGroup = document.getElementById('buttonGroup'); if(!dashboard) return; buttonGroup.innerHTML = ''; if(currentMode==="edit"){ buttonGroup.innerHTML = '<button class="btn" id="btnSelectAll">Tümünü Seç</button><button class="btn" id="btnClearAll">Tümü İptal</button><button class="btn" id="btnConfirm">Tamam</button><button class="btn btn-danger" id="btnResetAll">Sıfırla</button>'; document.getElementById('btnSelectAll')?.addEventListener('click',()=>selectAll()); document.getElementById('btnClearAll')?.addEventListener('click',()=>clearAll()); document.getElementById('btnConfirm')?.addEventListener('click',()=>{ if(selectedIds.size===0){ showConfirmModal("Uyarı","Hiçbir tezgah seçili değil.",null,null); return; } currentMode="showSelected"; saveToStorage(); updateStats(); render(); }); document.getElementById('btnResetAll')?.addEventListener('click',()=>{ showConfirmModal("Sıfırla","Tüm tezgah seçimleri silinecek.",()=>{ clearAll(); currentMode="edit"; saveToStorage(); updateStats(); render(); }); }); dashboard.innerHTML = '<div class="bench-grid">'+benchesMaster.map(b=>renderCard(b, isSelected(b,false), true, false)).join('')+'</div>'; attachCardEvents("edit"); } else if(currentMode==="showSelected"){ buttonGroup.innerHTML = '<button class="btn" id="btnShowAllBenches">Tüm Tezgahları Göster</button><button class="btn btn-danger" id="btnResetAllMode2">Sıfırla</button>'; document.getElementById('btnShowAllBenches')?.addEventListener('click',()=>{ pendingChanges.clear(); selectedIds.forEach(id=>pendingChanges.add(id)); currentMode="showAllWithSplit"; updateStats(); render(); }); document.getElementById('btnResetAllMode2')?.addEventListener('click',()=>{ showConfirmModal("Sıfırla","Tüm seçimler silinecek.",()=>{ clearAll(); currentMode="edit"; saveToStorage(); updateStats(); render(); }); }); const selectedBenches = benchesMaster.filter(b=>isSelected(b,false)); if(selectedBenches.length===0) dashboard.innerHTML = '<div style="text-align:center; color:#1976D2; padding:40px;">Henüz seçili tezgah yok.</div>'; else dashboard.innerHTML = '<div class="bench-grid">'+selectedBenches.map(b=>renderCard(b, false, true, true)).join('')+'</div>'; attachCardEvents("showSelected"); } else if(currentMode==="showAllWithSplit"){ buttonGroup.innerHTML = '<button class="btn" id="btnSaveMode3">Kaydet</button><button class="btn btn-secondary" id="btnCancelMode3">İptal</button><button class="btn btn-danger" id="btnResetAllMode3">Sıfırla</button>'; document.getElementById('btnSaveMode3')?.addEventListener('click',()=>{ selectedIds.clear(); pendingChanges.forEach(id=>selectedIds.add(id)); saveToStorage(); currentMode="showSelected"; updateStats(); render(); }); document.getElementById('btnCancelMode3')?.addEventListener('click',()=>{ currentMode="showSelected"; updateStats(); render(); }); document.getElementById('btnResetAllMode3')?.addEventListener('click',()=>{ showConfirmModal("Sıfırla","Tüm seçimler silinecek.",()=>{ clearAll(); currentMode="edit"; saveToStorage(); updateStats(); render(); }); }); const selectedBenches = benchesMaster.filter(b=>isSelected(b,true)); const unselectedBenches = benchesMaster.filter(b=>!isSelected(b,true) && b.selectable); let html = '<div class="bench-grid">'+selectedBenches.map(b=>renderCard(b, true, true, false)).join('')+'</div>'; if(unselectedBenches.length>0) html += '<div class="divider"></div><div class="section-title">📌 Seçilmemiş Tezgahlar</div><div class="bench-grid">'+unselectedBenches.map(b=>renderCard(b, false, false, false)).join('')+'</div>'; dashboard.innerHTML = html; attachCardEvents("showAllWithSplit"); } updateStats(); }
+function init(){ loadFromStorage(); updateStats(); render(); }
+init();
+<\/script>
+</body>
+</html>`;
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    // ======================= DEPO RAF BULUCU (orijinal) =======================
+    const depoHTML = `<!DOCTYPE html>
+<html lang="tr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes"><title>Depo Raf Bulucu</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;background:#f5f7fb;height:100vh;display:flex;flex-direction:column;overflow:hidden;}.header{background:#1976D2;padding:20px 16px 12px;}.header h1{text-align:center;color:white;font-size:28px;}.stats{background:#f5f7fb;padding:12px 16px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}.stat-card{background:white;padding:6px 12px;border-radius:20px;}.search-area{padding:12px 16px;}.search-input{width:100%;padding:14px 16px;font-size:16px;border-radius:28px;border:1px solid #ddd;}.results-container{flex:1;overflow-y:auto;padding:16px;}.part-card{background:white;border-radius:20px;margin-bottom:16px;padding:12px;display:flex;align-items:center;gap:14px;}.part-image{width:60px;height:60px;border-radius:12px;object-fit:cover;}.part-name{font-weight:600;}.part-rack{padding:4px 10px;border-radius:20px;background:#eef2ff;color:#1e40af;}.info-message{text-align:center;padding:40px;color:#6c757d;}.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);justify-content:center;align-items:center;}.modal.show{display:flex;}.modal img{max-width:90%;max-height:90%;}</style></head>
+<body><div class="header"><h1>DEPO RAF BULUCU</h1></div><div class="stats" id="statsArea"><span class="stat-card">📦 Toplam: <span id="totalCount">-</span></span><span class="stat-card">✅ Depoda: <span id="instockCount">-</span></span><span class="stat-card">⚠️ Tasfiye: <span id="outstockCount">-</span></span></div><div class="search-area"><input type="text" id="searchInput" class="search-input" placeholder="Parça ara..."></div><div id="resultsContainer" class="results-container"><div class="info-message">Veri yükleniyor...</div></div><div id="imageModal" class="modal"><img id="modalImage" src=""></div>
+<script>
+const VERI_URL='https://raw.githubusercontent.com/mmt8129/edeldepo/refs/heads/main/veri.html';
+let allParts=[],currentFiltered=[],currentDisplayLimit=10;
+async function loadParts(){ try{ const resp=await fetch(VERI_URL+'?t='+Date.now()); const html=await resp.text(); const rowRegex=/<tr>([\s\S]*?)<\/tr>/gi; let match; allParts=[]; while((match=rowRegex.exec(html))!==null){ const row=match[1]; let imgSrc='', partName='', rackRaw=''; const imgMatch=/<img[^>]+src=["']([^"']+)["']/i.exec(row); if(imgMatch) imgSrc=imgMatch[1]; const nameMatch=/<a[^>]*>([^<]+)<\/a>/i.exec(row); if(nameMatch) partName=nameMatch[1].trim(); if(!partName) continue; const rackMatch=/<\/a>\s*&nbsp;\s*([^<]+)/i.exec(row); if(rackMatch) rackRaw=rackMatch[1].trim(); let statusText=''; const tdRegex=/<td[^>]*>([\s\S]*?)<\/td>/gi; let idx=0,tdMatch; while((tdMatch=tdRegex.exec(row))!==null){ if(idx===4){ statusText=tdMatch[1].replace(/<[^>]*>/g,'').trim(); break; } idx++; } const isOut=statusText.includes('Tasfiye')||statusText.includes('Üretimde')||statusText===''; let rack='TASFİYE', stok='yok'; if(rackRaw&&!isOut){ rack=rackRaw; stok='var'; }else if(rackRaw&&isOut){ rack=rackRaw; stok='yok'; } allParts.push({ad:partName,resim:imgSrc,raf:rack,stokDurumu:stok}); } document.getElementById('totalCount').innerText=allParts.length; document.getElementById('instockCount').innerText=allParts.filter(p=>p.stokDurumu==='var').length; document.getElementById('outstockCount').innerText=allParts.filter(p=>p.stokDurumu==='yok').length; performSearch(); }catch(e){ document.getElementById('resultsContainer').innerHTML='<div class="info-message">Hata: '+e.message+'</div>'; } }
+function performSearch(){ const q=document.getElementById('searchInput').value.trim().toLowerCase(); currentFiltered=q===''?allParts:allParts.filter(p=>p.ad.toLowerCase().includes(q)); currentDisplayLimit=10; displayResults(); }
+function displayResults(){ const container=document.getElementById('resultsContainer'); if(currentFiltered.length===0){ container.innerHTML='<div class="info-message">Sonuç bulunamadı.</div>'; return; } let html=''; for(let i=0;i<Math.min(currentDisplayLimit,currentFiltered.length);i++){ const p=currentFiltered[i]; html+='<div class="part-card"><img class="part-image" src="'+(p.resim||'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath fill="%23ccc" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/%3E%3C/svg%3E')+'" data-fullimg="'+(p.resim||'')+'"><div class="part-info"><div class="part-name">'+escapeHtml(p.ad)+'</div><span class="part-rack">'+escapeHtml(p.raf)+'</span></div></div>'; } if(currentDisplayLimit<currentFiltered.length) html+='<button id="loadMoreBtn" style="width:100%;padding:12px;margin-top:10px;">Daha fazla</button>'; container.innerHTML=html; document.getElementById('loadMoreBtn')?.addEventListener('click',()=>{currentDisplayLimit+=10;displayResults();}); document.querySelectorAll('.part-image').forEach(img=>{ img.addEventListener('click',()=>{ const url=img.getAttribute('data-fullimg'); if(url&&!url.includes('data:image')){ document.getElementById('modalImage').src=url; document.getElementById('imageModal').classList.add('show'); } }); }); }
+function escapeHtml(s){if(!s)return '';return s.replace(/[&<>]/g,m=>m==='&'?'&amp;':m==='<'?'&lt;':'&gt;');}
+document.getElementById('searchInput').addEventListener('input',performSearch);
+document.getElementById('imageModal').addEventListener('click',()=>document.getElementById('imageModal').classList.remove('show'));
+loadParts();
+<\/script>
+</body>
+</html>`;
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAwQfifK4eaSrSjKpA776hD0RAlx_6a2_w",
-            databaseURL: "https://piyasa-9049c-default-rtdb.firebaseio.com",
-            projectId: "piyasa-9049c"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+    // ======================= HESAP MAKİNESİ (orijinal) =======================
+    const hesapHTML = `<!DOCTYPE html>
+<html lang="tr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Hesap Makinesi</title><style>:root{--bg:#f5f7fa;--card-bg:#fff;--primary:#4a90e2;--secondary:#e9ecef;--text-main:#1d1d1f;}*{margin:0;padding:0;box-sizing:border-box;user-select:none;}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);display:flex;justify-content:center;align-items:center;min-height:100vh;}.wrapper{position:relative;width:100%;max-width:360px;height:90vh;background:var(--card-bg);}.view{position:absolute;inset:0;background:var(--card-bg);transition:transform 0.4s,opacity 0.4s;display:flex;flex-direction:column;}.view.off-right{transform:translateX(100%);opacity:0;pointer-events:none;}.view.off-left{transform:translateX(-100%);opacity:0;pointer-events:none;}.view.active{transform:translateX(0);opacity:1;}.display-container{height:115px;display:flex;flex-direction:column;justify-content:center;padding:15px;border-bottom:1px solid var(--secondary);}.history{font-size:18px;color:#86868b;text-align:right;min-height:24px;}.display{font-size:54px;font-weight:700;text-align:right;}.buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:15px;flex-grow:1;}.button{height:65px;background:#fff;border:1.5px solid var(--secondary);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:600;box-shadow:0 4px 0 rgba(0,0,0,0.3);cursor:pointer;}.button:active{transform:translateY(3px);}.operator{border-color:var(--primary);color:var(--primary);}.function{color:#eb4d4b;}.equals{background:var(--primary);color:#fff;}.mode-btn{grid-column:span 2;background:var(--primary);color:#fff;font-size:16px;}.mode-header{padding:15px 20px;display:flex;justify-content:space-between;border-bottom:1px solid var(--secondary);}.inner-form{padding:15px 20px;display:flex;flex-direction:column;gap:15px;overflow-y:auto;}.inner-form input[type="number"]{padding:12px;border:2px solid var(--primary);border-radius:12px;font-size:18px;text-align:center;}.result-card{background:var(--primary);color:#fff;padding:15px;border-radius:16px;text-align:center;}.nav-btn{background:var(--primary);color:#fff;border:none;padding:8px 12px;border-radius:10px;font-weight:700;}.radio-group{display:flex;flex-wrap:wrap;gap:6px;}.radio-option{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:8px;cursor:pointer;}.radio-dot{width:20px;height:20px;border-radius:50%;border:2.5px solid #ccc;display:inline-block;}.radio-option input{display:none;}.radio-option input:checked~.radio-dot{background:#2ecc71;border-color:#2ecc71;}.radio-custom-input{width:55px;padding:6px;text-align:center;border-radius:8px;}</style></head>
+<body><div class="wrapper"><div id="calc-view" class="view active"><div class="display-container"><div class="history" id="history"></div><div class="display" id="display">0</div></div><div class="buttons"><div class="button function" data-action="clear">AC</div><div class="button function" data-action="backspace">⌫</div><div class="button function" data-action="sign">±</div><div class="button operator" data-action="divide">÷</div><div class="button number" data-num="7">7</div><div class="button number" data-num="8">8</div><div class="button number" data-num="9">9</div><div class="button operator" data-action="multiply">×</div><div class="button number" data-num="4">4</div><div class="button number" data-num="5">5</div><div class="button number" data-num="6">6</div><div class="button operator" data-action="subtract">−</div><div class="button number" data-num="1">1</div><div class="button number" data-num="2">2</div><div class="button number" data-num="3">3</div><div class="button operator" data-action="add">+</div><div class="button number" data-num="0">0</div><div class="button decimal" data-action="decimal">.</div><div class="button equals" data-action="equals">=</div><div class="button function" data-action="backspace">DEL</div><div class="button mode-btn" id="open-merkez">MERKEZ</div><div class="button mode-btn" id="open-dairesel">DAİRESEL</div></div></div><div id="merkez-view" class="view off-right"><div class="mode-header"><button class="nav-btn" id="close-merkez">👈</button><div>Merkez Mesafe</div><button class="nav-btn" id="merkez-temizle">SİL</button></div><form class="inner-form"><label>Tam Çap</label><div class="radio-group"><label class="radio-option"><input type="radio" name="tam-cap" value="2.5" checked><span class="radio-dot"></span>M3</label><label class="radio-option"><input type="radio" name="tam-cap" value="3.2"><span class="radio-dot"></span>M4</label><label class="radio-option"><input type="radio" name="tam-cap" value="4.2"><span class="radio-dot"></span>M5</label><label class="radio-option"><input type="radio" name="tam-cap" value="5"><span class="radio-dot"></span>M6</label><label class="radio-option"><input type="radio" name="tam-cap" value="custom"><span class="radio-dot"></span>Özel<input type="number" id="tam-cap-custom" class="radio-custom-input" disabled></label></div><label>Merkez Ölçüsü (mm)</label><input type="number" id="merkez-olcusu"><div class="result-card"><span id="merkez-sonuc">-</span></div></form></div><div id="dairesel-view" class="view off-right"><div class="mode-header"><button class="nav-btn" id="close-dairesel">👈</button><div>Dairesel Mesafe</div><button class="nav-btn" id="dairesel-temizle">SİL</button></div><form class="inner-form"><label>Delik Sayısı</label><div class="radio-group"><label class="radio-option"><input type="radio" name="hole-count" value="2" checked><span class="radio-dot"></span>2</label><label class="radio-option"><input type="radio" name="hole-count" value="3"><span class="radio-dot"></span>3</label><label class="radio-option"><input type="radio" name="hole-count" value="custom"><span class="radio-dot"></span>Özel<input type="number" id="hole-count-custom" class="radio-custom-input" disabled></label></div><label>Merkezden Uzaklık (R) (mm)</label><input type="number" id="pcd-radius"><label>Delik Çapı</label><div class="radio-group"><label class="radio-option"><input type="radio" name="hole-diam" value="2.5" checked><span class="radio-dot"></span>M3</label><label class="radio-option"><input type="radio" name="hole-diam" value="3.2"><span class="radio-dot"></span>M4</label><label class="radio-option"><input type="radio" name="hole-diam" value="4.2"><span class="radio-dot"></span>M5</label><label class="radio-option"><input type="radio" name="hole-diam" value="5"><span class="radio-dot"></span>M6</label><label class="radio-option"><input type="radio" name="hole-diam" value="custom"><span class="radio-dot"></span>Özel<input type="number" id="hole-diam-custom" class="radio-custom-input" disabled></label></div><div class="result-card"><span id="center-to-center">-</span></div><div class="result-card" style="background:#2ecc71;"><span id="outer-distance">-</span></div></form></div></div><script>
+const views={calc:document.getElementById('calc-view'),merkez:document.getElementById('merkez-view'),dairesel:document.getElementById('dairesel-view')};
+function goTo(t){Object.values(views).forEach(v=>v.classList.remove('active','off-left','off-right')); if(t==='calc'){views.calc.classList.add('active');views.merkez.classList.add('off-right');views.dairesel.classList.add('off-right');}else if(t==='merkez'){views.calc.classList.add('off-left');views.merkez.classList.add('active');}else if(t==='dairesel'){views.calc.classList.add('off-left');views.dairesel.classList.add('active');}}
+document.getElementById('open-merkez').onclick=()=>goTo('merkez'); document.getElementById('open-dairesel').onclick=()=>goTo('dairesel'); document.getElementById('close-merkez').onclick=()=>goTo('calc'); document.getElementById('close-dairesel').onclick=()=>goTo('calc');
+class CalcEngine{constructor(displayEl,historyEl){this.displayEl=displayEl;this.historyEl=historyEl;this.current='0';this.previous=null;this.operation=null;this.resetScreen=false;this.update();} update(){let[int,dec]=this.current.split('.'); int=int.replace(/\\B(?=(\\d{3})+(?!\\d))/g,','); this.displayEl.textContent=dec?int+'.'+dec:int; this.historyEl.textContent=this.operation?this.previous+' '+this.getOpSym(this.operation):'';} getOpSym(op){return{add:'+',subtract:'-',multiply:'×',divide:'÷'}[op]||'';} clear(){this.current='0';this.previous=this.operation=null;this.resetScreen=false;this.update();} sign(){this.current=(parseFloat(this.current)*-1).toString();this.update();} backspace(){if(this.current==='Error'){this.clear();return;} if(this.current.length===1||(this.current.length===2&&this.current.startsWith('-')))this.current='0'; else this.current=this.current.slice(0,-1);this.update();} append(n){if(this.resetScreen||this.current==='0'){this.current=n;this.resetScreen=false;}else this.current+=n;this.update();} decimal(){if(this.resetScreen){this.current='0.';this.resetScreen=false;}else if(!this.current.includes('.'))this.current+='.';this.update();} chooseOp(op){if(this.operation)this.calculate(); this.previous=this.current;this.operation=op;this.resetScreen=true;this.update();} calculate(){if(!this.operation||this.previous===null)return; const prev=parseFloat(this.previous),cur=parseFloat(this.current); let result; switch(this.operation){case'add':result=prev+cur;break;case'subtract':result=prev-cur;break;case'multiply':result=prev*cur;break;case'divide':result=cur===0?'Error':prev/cur;break;} this.current=result.toString();this.operation=null;this.resetScreen=true;this.update();}}
+const mainCalc=new CalcEngine(document.getElementById('display'),document.getElementById('history'));
+document.getElementById('calc-view').addEventListener('click',e=>{const btn=e.target.closest('.button'); if(!btn)return; const action=btn.dataset.action,num=btn.dataset.num; if(num!==undefined)mainCalc.append(num); else switch(action){case'clear':mainCalc.clear();break;case'backspace':mainCalc.backspace();break;case'sign':mainCalc.sign();break;case'decimal':mainCalc.decimal();break;case'add':case'subtract':case'multiply':case'divide':mainCalc.chooseOp(action);break;case'equals':mainCalc.calculate();break;}});
+function merkezHesap(){let tamCap; const checked=document.querySelector('input[name="tam-cap"]:checked'); if(checked.value==='custom') tamCap=parseFloat(document.getElementById('tam-cap-custom').value); else tamCap=parseFloat(checked.value); const merk=parseFloat(document.getElementById('merkez-olcusu').value); document.getElementById('merkez-sonuc').textContent=(isNaN(tamCap)||isNaN(merk))?'-':(merk-tamCap/2).toFixed(2)+" mm";}
+document.querySelectorAll('input[name="tam-cap"]').forEach(r=>{r.addEventListener('change',function(){document.getElementById('tam-cap-custom').disabled=this.value!=='custom'; merkezHesap();});}); document.getElementById('tam-cap-custom').oninput=merkezHesap; document.getElementById('merkez-olcusu').oninput=merkezHesap;
+function daireselHesap(){const radius=parseFloat(document.getElementById('pcd-radius').value); let count; const cntChecked=document.querySelector('input[name="hole-count"]:checked'); if(cntChecked.value==='custom') count=parseFloat(document.getElementById('hole-count-custom').value); else count=parseFloat(cntChecked.value); let diam; const diamChecked=document.querySelector('input[name="hole-diam"]:checked'); if(diamChecked.value==='custom') diam=parseFloat(document.getElementById('hole-diam-custom').value); else diam=parseFloat(diamChecked.value); if(isNaN(count)||isNaN(radius)||isNaN(diam)||count<2){document.getElementById('center-to-center').textContent='-'; document.getElementById('outer-distance').textContent='-'; return;} const center2=2*radius*Math.sin((180/count)*(Math.PI/180)); document.getElementById('center-to-center').textContent=center2.toFixed(2)+' mm'; document.getElementById('outer-distance').textContent=(center2+diam).toFixed(2)+' mm';}
+document.getElementById('pcd-radius').oninput=daireselHesap; document.querySelectorAll('input[name="hole-count"]').forEach(r=>{r.addEventListener('change',function(){document.getElementById('hole-count-custom').disabled=this.value!=='custom'; daireselHesap();});}); document.getElementById('hole-count-custom').oninput=daireselHesap; document.querySelectorAll('input[name="hole-diam"]').forEach(r=>{r.addEventListener('change',function(){document.getElementById('hole-diam-custom').disabled=this.value!=='custom'; daireselHesap();});}); document.getElementById('hole-diam-custom').oninput=daireselHesap;
+<\/script>
+</body>
+</html>`;
 
-       // YENİ HAVA DURUMU SİSTEMİ (OPEN-METEO UYUMLU)
-        db.ref("hava").on("value", s => {
-            const d = s.val();
-            if(!d || !d.current) return;
+    // ======================= RESİMLİ NOTLAR (orijinal) =======================
+    const notlarHTML = `<!DOCTYPE html>
+<html lang="tr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"><title>Resimli Notlar</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#faf9f6;font-family:system-ui;padding-bottom:20px;}button{border:none;border-radius:30px;padding:8px 10px;font-weight:700;cursor:pointer;}.btn-mavi{background:#2b7be4;color:white;}.btn-kirmizi{background:#dc3545;color:white;}.sabit-banner{position:sticky;top:0;background:#faf9f6;padding:2px 5px;display:flex;justify-content:space-between;border-bottom:3px solid #2b7be4;}.ana-icerik{padding:12px;}.arama-kutusu{width:100%;padding:10px;border-radius:50px;border:3px solid #ddd;margin-bottom:20px;}.baslik-item{background:white;padding:14px 22px;margin-bottom:12px;border-radius:24px;display:flex;justify-content:space-between;border-left:6px solid #2b7be4;}.baslik-item-metin{font-weight:700;cursor:pointer;}.tarih-etiket-kart{padding:4px 13px;border-radius:30px;font-size:12px;background:#fff0f0;border:1px solid #dc3545;}.detay-kart{background:white;border-radius:40px;padding:20px;margin-bottom:20px;border:3px solid #e0e0e0;}.resim-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px;}.resim-kart{aspect-ratio:1;border-radius:20px;overflow:hidden;border:3px solid #2b7be4;}.resim-kart img{width:100%;height:100%;object-fit:cover;cursor:pointer;}.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.98);z-index:2000;justify-content:center;align-items:center;}.modal.aktif{display:flex;}.galeri-resim{max-width:90%;max-height:90%;}</style></head>
+<body><div id="anaSayfa"><div class="ana-icerik"><input type="text" id="aramaInput" class="arama-kutusu" placeholder="Parça ara..."><button class="btn-mavi" id="yeniEkleBtn" style="width:100%">Yeni Parça Ekle</button><div id="baslikListesi"></div></div></div><div id="detaySayfa" style="display:none"><div class="sabit-banner"><button id="bannerGeriBtn">Geri</button><button id="bannerSilBtn">Sil</button></div><div class="detay-icerik"><div class="detay-kart"><div id="baslikGoster"></div><textarea id="aciklamaInput" placeholder="Açıklama"></textarea><div id="resimListesi" class="resim-grid"></div></div></div></div><div id="galeriModal" class="modal"><img id="galeriImg" class="galeri-resim"></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyClpsUxz81-qXr_ytRO1kiDz2BEoZJFwVE",authDomain:"edel-2c027.firebaseapp.com",projectId:"edel-2c027",storageBucket:"edel-2c027.firebasestorage.app",messagingSenderId:"1059038629442",appId:"1:1059038629442:web:e5ee6b76f892ccd1eee7db"};
+const app=initializeApp(firebaseConfig); const db=getFirestore(app);
+let kayitlar=[], aktifKayitId=null;
+async function verileriYukle(){ const snap=await getDocs(collection(db,"notlar")); kayitlar=[]; snap.forEach(d=>kayitlar.push({id:Number(d.id),...d.data()})); anaSayfayiGuncelle(); }
+async function kaydiGuncelle(kayit){ await setDoc(doc(db,"notlar",String(kayit.id)),kayit); }
+function anaSayfayiGuncelle(){ const arama=document.getElementById('aramaInput').value.toUpperCase(); const filtrelenmis=kayitlar.filter(k=>k.baslik&&k.baslik.toUpperCase().includes(arama)); const listeDiv=document.getElementById('baslikListesi'); listeDiv.innerHTML=''; filtrelenmis.forEach(k=>{const div=document.createElement('div'); div.className='baslik-item'; div.innerHTML='<span data-id="'+k.id+'" class="baslik-item-metin">'+(k.baslik||'PARÇA ADI')+'</span><span class="tarih-etiket-kart">📅 '+(k.guncelleme?new Date(k.guncelleme).toLocaleDateString():'--')+'</span>'; listeDiv.appendChild(div);}); document.querySelectorAll('.baslik-item-metin').forEach(el=>{el.addEventListener('click',()=>{aktifKayitId=Number(el.dataset.id); detaySayfasiYukle(aktifKayitId); document.getElementById('anaSayfa').style.display='none'; document.getElementById('detaySayfa').style.display='block';});}); }
+function detaySayfasiYukle(id){ const kayit=kayitlar.find(k=>k.id===id); if(!kayit)return; document.getElementById('baslikGoster').innerText=kayit.baslik||''; document.getElementById('aciklamaInput').value=kayit.aciklama||''; const resimDiv=document.getElementById('resimListesi'); resimDiv.innerHTML=''; if(kayit.resimler) kayit.resimler.forEach((resim,idx)=>{const kart=document.createElement('div'); kart.className='resim-kart'; const img=document.createElement('img'); img.src=typeof resim==='string'?resim:resim.url; img.onclick=()=>{document.getElementById('galeriImg').src=img.src; document.getElementById('galeriModal').classList.add('aktif');}; kart.appendChild(img); resimDiv.appendChild(kart);}); }
+document.getElementById('yeniEkleBtn').onclick=async()=>{const yeniId=Date.now(); const yeni={id:yeniId,baslik:'YENİ',aciklama:'',resimler:[],guncelleme:new Date().toISOString()}; kayitlar.push(yeni); await kaydiGuncelle(yeni); aktifKayitId=yeniId; detaySayfasiYukle(yeniId); document.getElementById('anaSayfa').style.display='none'; document.getElementById('detaySayfa').style.display='block';};
+document.getElementById('bannerGeriBtn').onclick=()=>{document.getElementById('detaySayfa').style.display='none'; document.getElementById('anaSayfa').style.display='block'; verileriYukle();};
+document.getElementById('bannerSilBtn').onclick=async()=>{if(confirm('Silmek istediğinize emin misiniz?')){await deleteDoc(doc(db,"notlar",String(aktifKayitId))); kayitlar=kayitlar.filter(k=>k.id!==aktifKayitId); document.getElementById('detaySayfa').style.display='none'; document.getElementById('anaSayfa').style.display='block'; verileriYukle();}};
+document.getElementById('galeriModal').onclick=()=>document.getElementById('galeriModal').classList.remove('aktif');
+verileriYukle();
+<\/script>
+</body>
+</html>`;
 
-            // Ana ekrandaki kutu
-            document.getElementById('w-temp').innerText = Math.round(d.current.temperature_2m) + "°C";
-            document.getElementById('w-desc').innerText = getWeatherDesc(d.current.weather_code);
-            document.getElementById('w-icon').innerText = getWeatherEmoji(d.current.weather_code);
+    // Uygulama container'ları
+    const tezgahContainer = document.getElementById('tezgahContainer');
+    const depoContainer = document.getElementById('depoContainer');
+    const hesapContainer = document.getElementById('hesapContainer');
+    const notlarContainer = document.getElementById('notlarContainer');
+    const backButton = document.getElementById('backButton');
+    const homePage = document.getElementById('homePage');
 
-let listHtml = '';
-            const gunAdlari = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
-            
-            for(let i=0; i<5; i++) {
-                let tarihObj = new Date(d.daily.time[i]);
-                let gunAdi = gunAdlari[tarihObj.getDay()];
-                let gun = String(tarihObj.getDate()).padStart(2, '0');
-                let ay = String(tarihObj.getMonth() + 1).padStart(2, '0');
-                let kisaTarih = `${gun}/${ay} ${gunAdi}`;
+    // İçerikleri doldur
+    tezgahContainer.innerHTML = tezgahHTML;
+    depoContainer.innerHTML = depoHTML;
+    hesapContainer.innerHTML = hesapHTML;
+    notlarContainer.innerHTML = notlarHTML;
 
-                // BUGÜNÜ VURGULA (i=0 yani ilk eleman bugündür)
-                let stil = (i === 0) ? 'style="background: rgba(255,140,0,0.08); border-left: 5px solid var(--orange); font-weight: bold;"' : '';
+    // Aktif Partiler linki
+    const ACTIVE_BATCHES_URL = "https://uys.edelkrone.com/Manufacturing/ProductionBatches/List";
 
-                listHtml += `
-                    <div class="modal-list-item" ${stil}>
-                        <span>${kisaTarih}</span>
-                        <span>${getWeatherEmoji(d.daily.weather_code[i])} ${getWeatherDesc(d.daily.weather_code[i])} ${Math.round(d.daily.temperature_2m_max[i])}° / ${Math.round(d.daily.temperature_2m_min[i])}°</span>
-                    </div>`;
+    // Sayfa geçmişi yönetimi
+    let currentApp = null;
+
+    function openApp(appId, isExternal = false, externalUrl = null) {
+        if (isExternal && externalUrl) {
+            // Yeni sekmede aç (tezgah panosundaki openLink mantığı)
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                window.open(externalUrl, '_blank');
+            } else {
+                window.open(externalUrl, '_blank', 'width=1200,height=800,resizable=yes,scrollbars=yes');
             }
-            document.getElementById('list-weather').innerHTML = listHtml;
-        });
-
-        // Hava Durumu Tanımları
-        function getWeatherDesc(code) {
-            const descriptions = {0:" ", 1:" ", 2:" ", 3:" ", 45:" ", 51:" ", 61:" ", 71:" ", 95:" "};
-            return descriptions[code] || "Açık";
+            return;
         }
 
-        // 2. PİYASA DÖNGÜSÜ (3 Saniye)
-  db.ref("piyasa").on("value", s => {
-    const data = s.val();
-    if (!data) return;
+        // Tüm container'ları gizle
+        tezgahContainer.classList.remove('active');
+        depoContainer.classList.remove('active');
+        hesapContainer.classList.remove('active');
+        notlarContainer.classList.remove('active');
+        homePage.style.display = 'none';
+        backButton.style.display = 'flex';
 
-    // 1. ANA EKRANDAKİ KAYAN BANT
-    let icerik = '';
-    const anaVarliklar = [
-        { ad: "DOLAR", simge: "💲", deger: data.currency[0].Alis, fark: data.currency[0].Fark },
-        { ad: "EURO", simge: "💶", deger: data.currency[1].Alis, fark: data.currency[1].Fark },
-        { ad: "ALTIN", simge: "🔸", deger: data.gold[0].Alis, fark: data.gold[0].Fark }
-    ];
+        // İlgili container'ı göster
+        if (appId === 'tezgah') tezgahContainer.classList.add('active');
+        else if (appId === 'depo') depoContainer.classList.add('active');
+        else if (appId === 'hesap') hesapContainer.classList.add('active');
+        else if (appId === 'notlar') notlarContainer.classList.add('active');
 
-    anaVarliklar.forEach(v => {
-        let ok = parseFloat(v.fark) >= 0 ? '<span class="ok-up">▲</span>' : '<span class="ok-down">▼</span>';
-        icerik += `<div class="market-item">${v.simge} ${v.ad}: ${v.deger} ${ok}</div>`;
-    });
- 
-    // Ana kutuyu ikiz kopya ve YENİLEME butonuyla doldur
-     document.getElementById('market-slider').innerHTML = `
-       <div class="market-track">${icerik}${icerik}</div>
-       <div class="piyasa-yenile-btn" onclick="location.reload();">🔄</div>`;
+        currentApp = appId;
+        // State'i push et (geri tuşu için)
+        history.pushState({ app: appId }, '', '#app-' + appId);
+    }
 
-    // 2. AÇILAN PENCERE (MODAL)
-    const tamListe = [
-        { n: "DOLAR", v: data.currency[0].Alis },
-        { n: "EURO", v: data.currency[1].Alis },
-        { n: "ONS ALTIN", v: data.gold[10].Alis },
-        { n: "GRAM ALTIN", v: data.gold[0].Alis },
-        { n: "ÇEYREK ALTIN", v: data.gold[1].Alis },
-        { n: "YARIM ALTIN", v: data.gold[2].Alis },
-        { n: "TAM ALTIN", v: data.gold[3].Alis },
-        { n: "GÜMÜŞ", v: data.gold[11].Alis },
-        { n: "18 AYAR ALTIN", v: data.gold[12].Alis },
-        { n: "22 AYAR BİLEZİK", v: data.gold[13].Alis }
-    ];
- 
- // SADECE SAAT KALSIN, BUTONU SİLDİK
-// TELEFONUN SAATİNİ DEĞİL, SADECE GITHUB'DAN GELEN GERÇEK VERİ SAATİNİ GÖSTERİR
-// Hem Altın hem Döviz kısmındaki saatleri kontrol eder, hangisini bulursa onu basar
-// Firebase'deki tam ismi olan "GuncellenmeZamani" olarak güncelledik
-let guncelSaat = (data.currency && data.currency[0].GuncellenmeZamani) || "VERİ BEKLENİYOR...";
-let mHtml = `
-    <div style="text-align:right; font-size:11px; color:#777; padding:8px; border-bottom:1px solid #eee;">
-        Son Güncelleme: ${guncelSaat} 
-    </div>`;
-    
-    tamListe.forEach(item => {
-        if(item.v) {
-            mHtml += `
-                <div class="modal-list-item">
-                    <span style="font-size: 14px;">🔹 ${item.n}</span>
-                    <span style="font-weight:bold;">${item.v}</span>
-                </div>`;
+    function closeApp() {
+        tezgahContainer.classList.remove('active');
+        depoContainer.classList.remove('active');
+        hesapContainer.classList.remove('active');
+        notlarContainer.classList.remove('active');
+        homePage.style.display = 'block';
+        backButton.style.display = 'none';
+        currentApp = null;
+        // Ana sayfa state'ini temizle
+        if (window.location.hash) {
+            history.replaceState(null, '', window.location.pathname);
         }
-    });
-    
-    document.getElementById('list-market').innerHTML = mHtml;
-});
+    }
 
-     db.ref("namaz/items/0").on("value", s => {
-            const n = s.val();
-            if(!n) return;
-
-            // 1. AM/PM'den 24 Saate Çevirme Fonksiyonu
-            const to24h = (timeStr) => {
-                let [time, modifier] = timeStr.split(' ');
-                let [hours, minutes] = time.split(':');
-                if (hours === '12') hours = '00';
-                if (modifier === 'pm') hours = parseInt(hours, 10) + 12;
-                return `${String(hours).padStart(2, '0')}:${minutes}`;
-            };
-
-            const vakitler = [
-                {ad: "İMSAK", saat: to24h(n.fajr)},
-                {ad: "ÖĞLE", saat: to24h(n.dhuhr)},
-                {ad: "İKİNDİ", saat: to24h(n.asr)},
-                {ad: "AKŞAM", saat: to24h(n.maghrib)},
-                {ad: "YATSI", saat: to24h(n.isha)}
-            ];
-
-            // 2. Aktif Vakti Bulma
-            let simdi = new Date();
-            let suan = String(simdi.getHours()).padStart(2, '0') + ":" + String(simdi.getMinutes()).padStart(2, '0');
-            
-            let aktifIndex = -1;
-            for(let i = 0; i < vakitler.length; i++) {
-                if(suan >= vakitler[i].saat) aktifIndex = i;
+    // Buton dinleyicileri
+    document.querySelectorAll('.app-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const app = btn.dataset.app;
+            const isExternal = btn.dataset.external === 'true';
+            if (isExternal) {
+                openApp(app, true, ACTIVE_BATCHES_URL);
+            } else {
+                openApp(app, false);
             }
-            if(aktifIndex == -1) aktifIndex = 4; // Gece yarısından imsağa kadar yatsı sayılır
-
-            // 3. Listeyi Oluşturma
-            let listHtml = '';
-            vakitler.forEach((v, index) => {
-                let stil = (index === aktifIndex) ? 'style="background: rgba(255,140,0,0.08); border-left: 5px solid var(--orange); font-weight: bold;"' : '';
-                listHtml += `<div class="modal-list-item" ${stil}><span>${v.ad}</span><span class="namaz-time" style="font-size:18px">${v.saat}</span></div>`;
-            });
-            document.getElementById('list-namaz').innerHTML = listHtml;
-            
-            // Ana ekrandaki şeridi güncelle (Sıradaki vakit)
-            let sonraki = vakitler[(aktifIndex + 1) % 5];
-            document.getElementById('n-next-name').innerText = "SIRADAKİ: " + sonraki.ad;
-            document.getElementById('n-next-time').innerText = sonraki.saat;
         });
+    });
 
-        // 4. HABERLER (KARIŞIK)
-        const sources = { 'haber_trt': 'TRT HABER', 'haber_cnn': 'CNN TÜRK', 'haber_ntv': 'NTV' };
-        let allNews = [];
-        Object.keys(sources).forEach(k => {
-            db.ref(k + "/items").on("value", s => {
-                if(s.val()) {
-                    const newsWithSrc = s.val().slice(0,4).map(i => ({...i, src: sources[k]}));
-                    allNews = allNews.filter(x => x.src !== sources[k]).concat(newsWithSrc);
-                    renderNews();
-                }
-            });
-        });
+    backButton.addEventListener('click', () => {
+        closeApp();
+        history.back(); // state'i temizle
+    });
 
-        function renderNews() {
-            const container = document.getElementById('news-list');
-            container.innerHTML = '';
-            allNews.forEach((n, index) => {
-                const img = n.enclosure ? n.enclosure.link : (n.thumbnail || 'https://via.placeholder.com/90?text='+n.src);
-                container.innerHTML += `
-                    <div class="news-card" onclick="showNewsDetail(${index})">
-                        <img src="${img}" class="news-img">
-                        <div class="news-content">
-                            <div class="news-title">${n.title}</div>
-                            <div class="news-source">${n.src}</div>
-                        </div>
-                    </div>`;
-            });
+    // Android fiziksel geri tuşu desteği
+    window.addEventListener('popstate', (event) => {
+        if (currentApp) {
+            closeApp();
+        } else {
+            // Zaten ana sayfadaysa hiçbir şey yapma
         }
+    });
 
-        function showNewsDetail(idx) {
-            const n = allNews[idx];
-            const img = n.enclosure ? n.enclosure.link : (n.thumbnail || '');
-            document.getElementById('news-detail-content').innerHTML = `
-                <h3>${n.title}</h3>
-                ${img ? `<img src="${img}" class="news-detail-img">` : ''}
-                <div class="news-detail-text">${n.description || 'Haber içeriği yüklenemedi.'}</div>
-                <a href="${n.link}" target="_blank" class="go-site">SİTEYE GİT</a>
-                <button class="close-btn" onclick="closeModal()">TAMAM</button>`;
-            openModal('modal-news');
+    // Başlangıçta hash varsa kontrol et (doğrudan erişim için)
+    if (window.location.hash) {
+        const hashApp = window.location.hash.replace('#app-', '');
+        if (['tezgah', 'depo', 'hesap', 'notlar'].includes(hashApp)) {
+            openApp(hashApp, false);
         }
-
-        // YARDIMCI FONKSİYONLAR
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
-        function getWeatherEmoji(code) {
-            // Kodları tek tek değil, gruplayarak en sağlam emojilere yönlendiriyoruz
-            if (code == 0) return "Güneşli ☀️"; 
-            if (code >= 1 && code <= 3) return "Az Bulutlu ⛅";
-            if (code >= 45 && code <= 48) return "Sisli ☁️";
-            if (code >= 51 && code <= 67) return "️Yağmurlu ☔"; // 67'yi burada kapsıyoruz
-            if (code >= 71 && code <= 86) return "Fırtınalı ❄️";
-            if (code >= 95) return "⛈️";
-            
-            // Eğer hala 67 veya başka bir kodda sorun çıkarsa diye emniyet kemeri:
-            return "☀️"; 
-        }
-    </script>
+    }
+</script>
 </body>
 </html>
